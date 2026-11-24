@@ -1,0 +1,17 @@
+{
+  "name": "dada-advisory-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.34.3",
+  "scripts": {
+    "build": "pnpm --filter \"@dada/*\" build && pnpm --filter \"web\" build && pnpm --filter \"api\" build",
+    "dev": "pnpm --parallel dev",
+    "test": "pnpm --filter \"@dada/contracts\" test && pnpm --filter \"api\" test",
+    "lint": "pnpm --parallel lint",
+    "db:generate": "pnpm --filter \"@dada/database\" db:generate",
+    "db:seed": "pnpm --filter \"@dada/database\" db:seed"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

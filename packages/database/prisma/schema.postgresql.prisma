@@ -1,0 +1,577 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id                String             @id @default(uuid())
+  code              String             @unique
+  name              String
+  cinNumber         String?
+  registeredAddress String?
+  domain            String?
+  isActive          Boolean            @default(true)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  users             User[]
+  employees         Employee[]
+  policies          CorporatePolicy[]
+  hrmsIntegrations  HRMSIntegration[]
+  payrollBatches    PayrollBatch[]
+  loanApplications  LoanApplication[]
+  remittances       EmployerRemittance[]
+  auditEvents       AuditEvent[]
+}
+
+model User {
+  id              String       @id @default(uuid())
+  email           String       @unique
+  phoneNumber     String?
+  passwordHash    String
+  fullName        String
+  role            String       // EMPLOYEE, HR_ADMIN, HR_OPERATOR, DADA_ADMIN, DADA_OPERATIONS, DADA_SUPER_ADMIN
+  isActive        Boolean      @default(true)
+  organizationId  String?
+  organization    Organization? @relation(fields: [organizationId], references: [id])
+  employeeId      String?      @unique
+  employee        Employee?    @relation(fields: [employeeId], references: [id])
+  lastLoginAt     DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  notifications   Notification[]
+  auditEvents     AuditEvent[]
+  consents        ConsentRecord[]
+}
+
+model Employee {
+  id                    String             @id @default(uuid())
+  organizationId        String
+  organization          Organization       @relation(fields: [organizationId], references: [id])
+  employeeCode          String             // Organization internal employee ID
+  firstName             String
+  lastName              String
+  officialEmail         String             @unique
+  personalEmail         String?
+  mobileNumber          String
+  panNumberMasked       String             // e.g. ABXXXXX4F
+  aadhaarMasked         String?            // e.g. XXXX-XXXX-9012
+  dateOfBirth           String?
+  gender                String?
+  department            String?
+  designation           String?
+  dateOfJoining         DateTime
+  employmentStatus      String             @default("CONFIRMED") // PROBATION, CONFIRMED, NOTICE_PERIOD, SUSPENDED, TERMINATED
+  resignationDate       DateTime?
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+
+  user                  User?
+  employmentRecords     EmploymentRecord[]
+  salaryRecords         SalaryRecord[]
+  attendanceRecords     AttendanceRecord[]
+  bankAccounts          BankAccount[]
+  kycRecords            KYCRecord[]
+  loanApplications      LoanApplication[]
+  loans                 Loan[]
+  repayments            Repayment[]
+  mandates              Mandate[]
+  documents             Document[]
+  payrollBatchItems     PayrollBatchItem[]
+  eligibilitySnapshots  EligibilitySnapshot[]
+
+  @@unique([organizationId, employeeCode])
+}
+
+model EmploymentRecord {
+  id             String    @id @default(uuid())
+  employeeId     String
+  employee       Employee  @relation(fields: [employeeId], references: [id])
+  designation    String
+  department     String
+  startDate      DateTime
+  endDate        DateTime?
+  isCurrent      Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+}
+
+model SalaryRecord {
+  id                    String    @id @default(uuid())
+  employeeId            String
+  employee              Employee  @relation(fields: [employeeId], references: [id])
+  month                 Int       // 1 - 12
+  year                  Int       // e.g. 2026
+  monthlyGrossPaise     Int
+  monthlyNetPaise       Int
+  basicPayPaise         Int
+  hraPaise              Int
+  allowancesPaise       Int
+  pfDeductionPaise      Int
+  taxDeductionPaise     Int
+  otherDeductionsPaise  Int       @default(0)
+  currency              String    @default("INR")
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@unique([employeeId, year, month])
+}
+
+model AttendanceRecord {
+  id                     String    @id @default(uuid())
+  employeeId             String
+  employee               Employee  @relation(fields: [employeeId], references: [id])
+  month                  Int
+  year                   Int
+  totalPayableDays       Int       @default(30)
+  daysPresent            Int       @default(0)
+  paidLeaveDays          Int       @default(0)
+  lossOfPayDays          Int       @default(0)
+  totalApprovedWorkedDays Int      @default(0) // present + paidLeave
+  isFinalized            Boolean   @default(false)
+  correctionNotes        String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  @@unique([employeeId, year, month])
+}
+
+model CorporatePolicy {
+  id                         String       @id @default(uuid())
+  organizationId             String
+  organization               Organization @relation(fields: [organizationId], references: [id])
+  // EWA settings
+  maxEwaPercentage           Int          @default(50) // 50%
+  minEwaWithdrawalPaise      Int          @default(100000) // Rs 1,000
+  maxEwaWithdrawalPaise      Int          @default(5000000) // Rs 50,000
+  maxEwaWithdrawalsPerCycle  Int          @default(2)
+  payrollCutoffDay           Int          @default(25)
+  ewaFeePaise                Int          @default(9900) // Rs 99
+  // Payroll Loan settings
+  allowPayrollLoans          Boolean      @default(true)
+  salaryMultiplier           Int          @default(3) // 3x net salary
+  minTenureMonths            Int          @default(6)
+  maxTenureMonths            Int          @default(24)
+  annualInterestRatePercent  Float        @default(14.5)
+  processingFeePercent       Float        @default(1.5)
+  maxFoirPercent             Int          @default(50)
+  isActive                   Boolean      @default(true)
+  createdAt                  DateTime     @default(now())
+  updatedAt                  DateTime     @updatedAt
+}
+
+model HRMSIntegration {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  provider       String       // KEKA, DARWINBOX, GREYTHR, SAP_SUCCESSFACTORS, SFTP, CSV_MANUAL
+  apiUrl         String?
+  status         String       @default("CONNECTED") // CONNECTED, SYNCING, FAILED, DISABLED
+  lastSyncAt     DateTime?
+  lastSyncStatus String?
+  syncErrorLog   String?
+  autoSyncDaily  Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model EligibilitySnapshot {
+  id                   String       @id @default(uuid())
+  employeeId           String
+  employee             Employee     @relation(fields: [employeeId], references: [id])
+  productType          String       // EWA, PAYROLL_LOAN
+  month                Int
+  year                 Int
+  monthlyNetSalaryPaise Int
+  approvedDaysWorked   Int
+  calculatedEligiblePaise Int
+  alreadyWithdrawnPaise Int
+  existingEmisPaise    Int
+  availableLimitPaise  Int
+  isEligible           Boolean
+  ineligibilityReason  String?
+  createdAt            DateTime     @default(now())
+}
+
+model NBFCPartner {
+  id                   String    @id @default(uuid())
+  code                 String    @unique // APEX_CAPITAL, DMI_FINANCE, LT_FINANCE
+  name                 String
+  apiUrl               String
+  webhookSecret        String
+  supportedProducts    String    // EWA,PAYROLL_LOAN
+  isActive             Boolean   @default(true)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  loans                Loan[]
+  applications         LoanApplication[]
+  remittances          EmployerRemittance[]
+}
+
+model LoanApplication {
+  id                    String       @id @default(uuid())
+  applicationNumber     String       @unique
+  organizationId        String
+  organization          Organization @relation(fields: [organizationId], references: [id])
+  employeeId            String
+  employee              Employee     @relation(fields: [employeeId], references: [id])
+  nbfcPartnerId         String?
+  nbfcPartner           NBFCPartner? @relation(fields: [nbfcPartnerId], references: [id])
+  productType           String       // EWA, PAYROLL_LOAN
+  status                String       @default("DRAFT")
+  requestedAmountPaise  Int
+  approvedAmountPaise   Int?
+  tenureMonths          Int?         @default(1) // 1 for EWA
+  interestRatePercent   Float?       @default(0.0)
+  processingFeePaise    Int?         @default(0)
+  monthlyEmiPaise       Int?         @default(0)
+  disbursementAccountNo String?
+  disbursementIfsc      String?
+  rejectionReason       String?
+  nbfcApplicationRef    String?
+  kfsDocumentId         String?
+  agreementDocumentId   String?
+  mandateId             String?
+  eSignedAt             DateTime?
+  disbursedAt           DateTime?
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+
+  ewaDetails            EWAApplication?
+  payrollLoanDetails    PayrollLoanApplication?
+  statusHistory         ApplicationStatusHistory[]
+  loan                  Loan?
+  documents             Document[]
+}
+
+model EWAApplication {
+  id                    String          @id @default(uuid())
+  applicationId         String          @unique
+  application           LoanApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  salaryCycleMonth      Int
+  salaryCycleYear       Int
+  approvedDaysWorked    Int
+  grossEarnedPaise      Int
+  convenienceFeePaise   Int             @default(9900)
+  netDisbursementPaise  Int
+  repaymentDueDate      DateTime
+  createdAt             DateTime        @default(now())
+}
+
+model PayrollLoanApplication {
+  id                    String          @id @default(uuid())
+  applicationId         String          @unique
+  application           LoanApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  purpose               String?
+  creditBureauScore     Int?            @default(750)
+  foirPercentCalculated Float?
+  totalInterestPaise    Int
+  totalRepaymentPaise   Int
+  firstEmiDate          DateTime
+  createdAt             DateTime        @default(now())
+}
+
+model ApplicationStatusHistory {
+  id             String          @id @default(uuid())
+  applicationId  String
+  application    LoanApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  fromStatus     String?
+  toStatus       String
+  changedByRole  String?         // SYSTEM, EMPLOYEE, HR_ADMIN, DADA_ADMIN, NBFC_WEBHOOK
+  remarks        String?
+  createdAt      DateTime        @default(now())
+}
+
+model Loan {
+  id                    String          @id @default(uuid())
+  loanAccountNumber     String          @unique
+  applicationId         String          @unique
+  application           LoanApplication @relation(fields: [applicationId], references: [id])
+  employeeId            String
+  employee              Employee        @relation(fields: [employeeId], references: [id])
+  nbfcPartnerId         String
+  nbfcPartner           NBFCPartner     @relation(fields: [nbfcPartnerId], references: [id])
+  productType           String          // EWA, PAYROLL_LOAN
+  principalPaise        Int
+  interestRatePercent   Float
+  tenureMonths          Int
+  monthlyEmiPaise       Int
+  totalRepayablePaise   Int
+  totalPaidPaise        Int             @default(0)
+  outstandingPaise      Int
+  disbursementUtr       String?
+  disbursedAt           DateTime?
+  status                String          @default("ACTIVE") // ACTIVE, CLOSED, DEFAULTED
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  repaymentSchedules    RepaymentSchedule[]
+  repayments            Repayment[]
+  payrollBatchItems     PayrollBatchItem[]
+}
+
+model RepaymentSchedule {
+  id                String       @id @default(uuid())
+  loanId            String
+  loan              Loan         @relation(fields: [loanId], references: [id])
+  installmentNumber Int
+  dueDate           DateTime
+  principalPaise    Int
+  interestPaise     Int
+  totalDuePaise     Int
+  paidPaise         Int          @default(0)
+  status            String       @default("PENDING") // PENDING, PARTIALLY_PAID, PAID, OVERDUE
+  paidAt            DateTime?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+}
+
+model Repayment {
+  id                String       @id @default(uuid())
+  loanId            String
+  loan              Loan         @relation(fields: [loanId], references: [id])
+  employeeId        String
+  employee          Employee     @relation(fields: [employeeId], references: [id])
+  amountPaise       Int
+  repaymentType     String       // PAYROLL_DEDUCTION, DIRECT_NACH, MANUAL_TRANSFER
+  utrNumber         String?
+  status            String       @default("PENDING") // PENDING, DEDUCTED_BY_EMPLOYER, REMITTED_TO_NBFC, CONFIRMED_BY_NBFC
+  paymentDate       DateTime
+  confirmedAt       DateTime?
+  createdAt         DateTime     @default(now())
+
+  allocations       RepaymentAllocation[]
+}
+
+model RepaymentAllocation {
+  id             String    @id @default(uuid())
+  repaymentId    String
+  repayment      Repayment @relation(fields: [repaymentId], references: [id], onDelete: Cascade)
+  principalPaise Int
+  interestPaise  Int
+  feePaise       Int       @default(0)
+  penaltyPaise   Int       @default(0)
+  createdAt      DateTime  @default(now())
+}
+
+model BankAccount {
+  id             String    @id @default(uuid())
+  employeeId     String
+  employee       Employee  @relation(fields: [employeeId], references: [id])
+  accountNumber  String    // Masked in UI/logs
+  ifscCode       String
+  bankName       String
+  branchName     String?
+  accountType    String    @default("SAVINGS") // SAVINGS, SALARY
+  isSalaryAccount Boolean  @default(true)
+  isPennyDropVerified Boolean @default(true)
+  beneficiaryName String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model KYCRecord {
+  id             String    @id @default(uuid())
+  employeeId     String
+  employee       Employee  @relation(fields: [employeeId], references: [id])
+  documentType   String    // PAN, AADHAAR, BANK_PASSBOOK, SALARY_SLIP
+  status         String    @default("VERIFIED") // PENDING, VERIFIED, REJECTED
+  verificationRef String?
+  verifiedAt     DateTime?
+  documentNumber String?   // Masked
+  rawResponse    String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model ConsentRecord {
+  id             String    @id @default(uuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id])
+  purpose        String    // BUREAU_FETCH, EWA_TERMS, NACH_MANDATE, DATA_PROCESSING
+  consentVersion String    @default("v1.0")
+  ipAddress      String?
+  userAgent      String?
+  timestamp      DateTime  @default(now())
+  isRevoked      Boolean   @default(false)
+}
+
+model Document {
+  id             String           @id @default(uuid())
+  employeeId     String
+  employee       Employee         @relation(fields: [employeeId], references: [id])
+  applicationId  String?
+  application    LoanApplication? @relation(fields: [applicationId], references: [id])
+  documentType   String           // KFS, LOAN_AGREEMENT, SALARY_SLIP, E_MANDATE
+  fileName       String
+  fileUrl        String
+  mimeType       String           @default("application/pdf")
+  fileSize       Int              @default(1024)
+  createdAt      DateTime         @default(now())
+}
+
+model Mandate {
+  id             String    @id @default(uuid())
+  employeeId     String
+  employee       Employee  @relation(fields: [employeeId], references: [id])
+  mandateType    String    @default("E_NACH") // E_NACH, UPI_AUTOPAY
+  maxAmountPaise Int
+  status         String    @default("ACTIVE") // PENDING, ACTIVE, REJECTED, EXPIRED
+  umrn           String?   // Unique Mandate Reference Number
+  bankName       String?
+  validUntil     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model PayrollBatch {
+  id             String             @id @default(uuid())
+  batchNumber    String             @unique
+  organizationId String
+  organization   Organization       @relation(fields: [organizationId], references: [id])
+  month          Int
+  year           Int
+  cutoffDate     DateTime
+  totalEmployees Int                @default(0)
+  totalDuePaise  Int                @default(0)
+  totalDeductedPaise Int            @default(0)
+  status         String             @default("DRAFT") // DRAFT, GENERATED, EXPORTED, REMITTANCE_UPLOADED, RECONCILED, RECONCILED_WITH_EXCEPTIONS
+  generatedAt    DateTime?
+  exportedAt     DateTime?
+  reconciledAt   DateTime?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  items          PayrollBatchItem[]
+  remittances    EmployerRemittance[]
+}
+
+model PayrollBatchItem {
+  id             String       @id @default(uuid())
+  payrollBatchId String
+  payrollBatch   PayrollBatch @relation(fields: [payrollBatchId], references: [id], onDelete: Cascade)
+  employeeId     String
+  employee       Employee     @relation(fields: [employeeId], references: [id])
+  loanId         String
+  loan           Loan         @relation(fields: [loanId], references: [id])
+  productType    String       // EWA, PAYROLL_LOAN
+  dueAmountPaise Int
+  deductedAmountPaise Int     @default(0)
+  status         String       @default("PENDING") // PENDING, DEDUCTED, PARTIAL, FAILED
+  remarks        String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  exceptions     ReconciliationException[]
+}
+
+model EmployerRemittance {
+  id             String         @id @default(uuid())
+  organizationId String
+  organization   Organization   @relation(fields: [organizationId], references: [id])
+  payrollBatchId String
+  payrollBatch   PayrollBatch   @relation(fields: [payrollBatchId], references: [id])
+  nbfcPartnerId  String
+  nbfcPartner    NBFCPartner    @relation(fields: [nbfcPartnerId], references: [id])
+  utrNumber      String
+  remittedAmountPaise Int
+  remittanceDate DateTime
+  receiptFileUrl String?
+  status         String         @default("PENDING_VERIFICATION") // PENDING_VERIFICATION, MATCHED, MISMATCH
+  notes          String?
+  createdAt      DateTime       @default(now())
+
+  reconciliations ReconciliationRecord[]
+}
+
+model ReconciliationRecord {
+  id                   String             @id @default(uuid())
+  employerRemittanceId String
+  employerRemittance   EmployerRemittance @relation(fields: [employerRemittanceId], references: [id])
+  expectedAmountPaise  Int
+  actualAmountPaise    Int
+  matchedCount         Int                @default(0)
+  exceptionCount       Int                @default(0)
+  status               String             @default("RECONCILED") // RECONCILED, RECONCILED_WITH_EXCEPTIONS, FAILED
+  reconciledByRole     String             @default("SYSTEM")
+  notes                String?
+  createdAt            DateTime           @default(now())
+
+  exceptions           ReconciliationException[]
+}
+
+model ReconciliationException {
+  id                     String                @id @default(uuid())
+  reconciliationRecordId String?
+  reconciliationRecord   ReconciliationRecord? @relation(fields: [reconciliationRecordId], references: [id])
+  payrollBatchItemId     String?
+  payrollBatchItem       PayrollBatchItem?     @relation(fields: [payrollBatchItemId], references: [id])
+  exceptionType          String                // PARTIAL_DEDUCTION, FAILED_DEDUCTION, INSUFFICIENT_SALARY, EMPLOYEE_RESIGNED, UNMATCHED_UTR, ATTENDANCE_CORRECTION_OVERDRAW
+  expectedPaise          Int
+  actualPaise            Int
+  status                 String                @default("OPEN") // OPEN, RESOLVED, WAIVED
+  resolutionNotes        String?
+  resolvedAt             DateTime?
+  createdAt              DateTime              @default(now())
+}
+
+model WebhookEvent {
+  id            String    @id @default(uuid())
+  source        String    // NBFC, HRMS, BANK
+  eventType     String    // DISBURSEMENT_CONFIRMED, APPLICATION_APPROVED, REPAYMENT_CONFIRMED
+  payloadJson   String
+  signature     String?
+  status        String    @default("PENDING") // PENDING, PROCESSED, FAILED, RETRYING
+  retryCount    Int       @default(0)
+  errorMessage  String?
+  processedAt   DateTime?
+  createdAt     DateTime  @default(now())
+}
+
+model IdempotencyRecord {
+  id            String    @id @default(uuid())
+  key           String    @unique
+  operationName String
+  responseJson  String
+  createdAt     DateTime  @default(now())
+}
+
+model AuditEvent {
+  id             String        @id @default(uuid())
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  userId         String?
+  user           User?         @relation(fields: [userId], references: [id])
+  action         String        // e.g. EWA_REQUESTED, APPLICATION_APPROVED, ATTENDANCE_CORRECTED, BATCH_GENERATED
+  resourceType   String        // e.g. LOAN_APPLICATION, ATTENDANCE, RECONCILIATION
+  resourceId     String?
+  metadataJson   String?
+  ipAddress      String?
+  createdAt      DateTime      @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  message   String
+  type      String   @default("INFO") // INFO, SUCCESS, WARNING, ALERT
+  isRead    Boolean  @default(false)
+  linkUrl   String?
+  createdAt DateTime @default(now())
+}
+
+model OutboxEvent {
+  id          String    @id @default(uuid())
+  topic       String
+  payloadJson String
+  status      String    @default("PENDING") // PENDING, PUBLISHED, FAILED
+  retryCount  Int       @default(0)
+  createdAt   DateTime  @default(now())
+}
