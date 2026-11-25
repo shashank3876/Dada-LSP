@@ -74,7 +74,7 @@ export default function ApplicationsTrackerPage() {
 
               {/* State Machine Stepper */}
               <div className="py-2">
-                <div className="grid grid-cols-4 gap-2 text-center text-xs">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-2 text-center text-[10px] sm:text-xs">
                   <div className="space-y-2">
                     <div className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center mx-auto font-bold text-xs">
                       ✓

@@ -13,3 +13,6 @@ coverage/
 *.sqlite-journal
 *.db
 *.db-journal
+.neon
+.vercel
+.env*

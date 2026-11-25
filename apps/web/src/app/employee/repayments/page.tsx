@@ -18,7 +18,7 @@ export default function RepaymentsPage() {
         <div className="p-6 border-b border-slate-200 font-bold text-sm text-dada-950">
           Upcoming Installments
         </div>
-        <table className="w-full text-left text-xs">
+        <div className="table-scroll"><table className="w-full text-left text-xs">
           <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
             <tr>
               <th className="py-3.5 px-6">Due Date</th>
@@ -41,7 +41,7 @@ export default function RepaymentsPage() {
               </td>
             </tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
   );

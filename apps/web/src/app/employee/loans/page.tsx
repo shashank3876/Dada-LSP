@@ -53,7 +53,7 @@ export default function LoansPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
           <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
             <span className="text-slate-500">Disbursement UTR:</span>
             <div className="font-mono font-bold text-slate-800">CMS9876543210</div>

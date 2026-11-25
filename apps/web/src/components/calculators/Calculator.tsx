@@ -50,29 +50,35 @@ export default function Calculator() {
       <div className="flex border-b border-slate-200 bg-slate-50/80">
         <button
           onClick={() => setActiveTab('PAYROLL_LOAN')}
-          className={`flex-1 py-4 px-6 text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+          className={`flex-1 py-3 sm:py-4 px-3 sm:px-6 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all ${
             activeTab === 'PAYROLL_LOAN'
               ? 'bg-white text-dada-900 border-b-2 border-emerald-600 shadow-sm'
               : 'text-slate-500 hover:text-slate-800'
           }`}
         >
-          <CalcIcon className="w-4 h-4 text-emerald-600" />
-          <span>Corporate Payroll Loan (EMI)</span>
+          <CalcIcon className="w-4 h-4 text-emerald-600 shrink-0" />
+          <span className="text-center leading-tight">
+            <span className="sm:hidden">Payroll Loan</span>
+            <span className="hidden sm:inline">Corporate Payroll Loan (EMI)</span>
+          </span>
         </button>
         <button
           onClick={() => setActiveTab('EWA')}
-          className={`flex-1 py-4 px-6 text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+          className={`flex-1 py-3 sm:py-4 px-3 sm:px-6 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all ${
             activeTab === 'EWA'
               ? 'bg-white text-dada-900 border-b-2 border-emerald-600 shadow-sm'
               : 'text-slate-500 hover:text-slate-800'
           }`}
         >
-          <CalcIcon className="w-4 h-4 text-emerald-600" />
-          <span>Earned Wage Access (EWA)</span>
+          <CalcIcon className="w-4 h-4 text-emerald-600 shrink-0" />
+          <span className="text-center leading-tight">
+            <span className="sm:hidden">Earned Wage</span>
+            <span className="hidden sm:inline">Earned Wage Access (EWA)</span>
+          </span>
         </button>
       </div>
 
-      <div className="p-6 md:p-8">
+      <div className="p-4 sm:p-6 md:p-8">
         {activeTab === 'PAYROLL_LOAN' ? (
           /* Payroll Loan EMI View */
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">

@@ -4,9 +4,9 @@ import { Check, X, ArrowRight, Zap, TrendingUp } from 'lucide-react';
 
 export default function ProductsPage() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-16">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-10 sm:space-y-16">
       <div className="text-center max-w-3xl mx-auto space-y-4">
-        <h1 className="text-4xl font-extrabold text-dada-950 tracking-tight">
+        <h1 className="text-2xl sm:text-4xl font-extrabold text-dada-950 tracking-tight">
           Workplace Financial Products
         </h1>
         <p className="text-base text-slate-600">
@@ -16,12 +16,13 @@ export default function ProductsPage() {
 
       {/* Comparison Table */}
       <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+        <div className="table-scroll">
         <table className="w-full text-left text-sm">
           <thead className="bg-slate-50 border-b border-slate-200 text-slate-700">
             <tr>
-              <th className="py-4 px-6 font-bold w-1/3">Feature</th>
-              <th className="py-4 px-6 font-bold text-emerald-700 w-1/3">Earned Wage Access (EWA)</th>
-              <th className="py-4 px-6 font-bold text-dada-700 w-1/3">Corporate Payroll Loan</th>
+              <th className="py-3 sm:py-4 px-4 sm:px-6 font-bold w-1/3">Feature</th>
+              <th className="py-3 sm:py-4 px-4 sm:px-6 font-bold text-emerald-700 w-1/3">Earned Wage Access (EWA)</th>
+              <th className="py-3 sm:py-4 px-4 sm:px-6 font-bold text-dada-700 w-1/3">Corporate Payroll Loan</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 text-slate-600">
@@ -67,6 +68,7 @@ export default function ProductsPage() {
             </tr>
           </tbody>
         </table>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">

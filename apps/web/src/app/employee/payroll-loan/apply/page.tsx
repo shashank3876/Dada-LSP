@@ -105,7 +105,7 @@ export default function PayrollLoanApplyPage() {
           <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
             Repayment Tenure (Months)
           </label>
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[6, 12, 18, 24].map((t) => (
               <button
                 key={t}

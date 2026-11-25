@@ -118,13 +118,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl border border-slate-200 shadow-xl">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-8 sm:py-12">
+      <div className="max-w-md w-full space-y-6 sm:space-y-8 bg-white p-5 sm:p-8 rounded-2xl border border-slate-200 shadow-xl">
         <div className="text-center space-y-2">
           <div className="w-12 h-12 rounded-xl bg-dada-900 text-white flex items-center justify-center mx-auto shadow-md">
             <Lock className="w-6 h-6 text-emerald-400" />
           </div>
-          <h2 className="text-2xl font-extrabold text-dada-950 tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-extrabold text-dada-950 tracking-tight">
             Portal Authentication
           </h2>
           <p className="text-xs text-slate-500">
@@ -189,7 +189,7 @@ export default function LoginPage() {
             <UserCheck className="w-4 h-4 text-emerald-600" />
             <span>1-Click Demo Accounts</span>
           </div>
-          <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
             {demoAccounts.map((acc, idx) => (
               <button
                 key={idx}

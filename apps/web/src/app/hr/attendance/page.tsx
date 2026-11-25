@@ -76,7 +76,7 @@ export default function HrAttendancePage() {
       )}
 
       <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-        <table className="w-full text-left text-xs">
+        <div className="table-scroll"><table className="w-full text-left text-xs">
           <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
             <tr>
               <th className="py-3.5 px-4">Employee</th>
@@ -115,7 +115,7 @@ export default function HrAttendancePage() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       </div>
 
       {/* Attendance Correction Modal */}
