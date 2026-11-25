@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PrismaService } from './common/prisma.service';
+import { HealthController } from './modules/health/health.controller';
 import { AuthModule } from './modules/auth/auth.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { EmployeesModule } from './modules/employees/employees.module';
@@ -36,7 +37,9 @@ import { AuditModule } from './modules/audit/audit.module';
     ReportsModule,
     AuditModule,
   ],
+  controllers: [HealthController],
   providers: [PrismaService],
   exports: [PrismaService],
 })
 export class AppModule {}
+

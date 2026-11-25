@@ -28,6 +28,7 @@ RUN pnpm --filter @dada/contracts build \
 
 FROM base AS runner
 ENV NODE_ENV=production
+ENV PORT=3001
 COPY --from=builder /app ./
 WORKDIR /app/apps/api
 EXPOSE 3001

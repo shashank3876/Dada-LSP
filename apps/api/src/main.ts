@@ -41,10 +41,24 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  const port = process.env.PORT || 3001;
-  await app.listen(port);
-  logger.log(`🚀 Dada Advisory Backend running at http://localhost:${port}`);
-  logger.log(`📖 Swagger API Docs available at http://localhost:${port}/api/docs`);
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL is required');
+  }
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is required');
+  }
+
+  const port = Number(process.env.PORT) || 3001;
+  await app.listen(port, '0.0.0.0');
+  logger.log(`Dada Advisory Backend running on 0.0.0.0:${port}`);
+  logger.log(`Health check: http://0.0.0.0:${port}/health`);
+  logger.log(`Swagger docs: http://0.0.0.0:${port}/api/docs`);
 }
 
-bootstrap();
+bootstrap().catch((error) => {
+  // Ensure Railway captures a clear fatal boot failure
+  // eslint-disable-next-line no-console
+  console.error('Fatal bootstrap error:', error);
+  process.exit(1);
+});
+
