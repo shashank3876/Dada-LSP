@@ -359,7 +359,7 @@ export default function LoginPage() {
             <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs">
               <strong>Step 2: Enter Verification OTP & Password</strong>
               <div className="text-[11px] text-emerald-700 mt-0.5">
-                A verification code was sent to your corporate email. Enter it below to activate your account.
+                A verification code was dispatched. In this staging environment, enter demo OTP: <strong className="text-emerald-950 font-mono font-bold bg-emerald-200/60 px-1 py-0.5 rounded">123456</strong>
               </div>
             </div>
 
