@@ -1,15 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0B1B2B"/>
-      <stop offset="100%" stop-color="#081420"/>
-    </linearGradient>
-    <linearGradient id="dGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FFFFFF"/>
-      <stop offset="100%" stop-color="#F1F5F9"/>
-    </linearGradient>
+    <clipPath id="circleClip">
+      <circle cx="32" cy="32" r="30"/>
+    </clipPath>
   </defs>
-  <rect x="2" y="2" width="60" height="60" rx="15" fill="url(#bgGrad)" stroke="#10B981" stroke-width="2.5" stroke-opacity="0.9"/>
-  <path d="M 18 14 L 18 50 L 32 50 C 43.5 50 50 42 50 32 C 50 22 43.5 14 32 14 Z M 26 21.5 L 31.5 21.5 C 38 21.5 42 25.5 42 32 C 42 38.5 38 42.5 31.5 42.5 L 26 42.5 Z" fill="url(#dGrad)" fill-rule="evenodd"/>
-  <circle cx="46" cy="18" r="4.5" fill="#10B981" stroke="#0B1B2B" stroke-width="1"/>
+  <circle cx="32" cy="32" r="31" fill="#0B1B2B" stroke="#D4AF37" stroke-width="2"/>
+  <image href="/logo-square.png" x="2" y="2" width="60" height="60" clip-path="url(#circleClip)" />
 </svg>

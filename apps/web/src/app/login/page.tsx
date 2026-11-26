@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Lock, Mail, ArrowRight, UserCheck, Shield, KeyRound, AlertCircle, Building2, UserPlus, LogIn } from 'lucide-react';
 import { apiRequest, setAuthToken } from '@/lib/api';
 
@@ -203,14 +204,21 @@ export default function LoginPage() {
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
       <div className="max-w-md w-full space-y-6 bg-white p-8 rounded-2xl border border-slate-200 shadow-xl">
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-xl bg-dada-900 text-white flex items-center justify-center mx-auto shadow-md">
-            <Lock className="w-6 h-6 text-emerald-400" />
+          <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-amber-500 shadow-lg mx-auto bg-amber-50">
+            <Image
+              src="/logo-square.png"
+              alt="Dada Advisory Services LLP Logo"
+              width={64}
+              height={64}
+              className="object-cover w-full h-full"
+              priority
+            />
           </div>
           <h2 className="text-2xl font-extrabold text-dada-950 tracking-tight">
             Portal Authentication
           </h2>
-          <p className="text-xs text-slate-500">
-            Secure lending platform for Corporate Employers, Employees, and Partner NBFCs.
+          <p className="text-xs text-slate-500 font-medium">
+            Dada Advisory Services LLP • Regulated Digital Loan Service Provider (LSP)
           </p>
         </div>
 
@@ -474,6 +482,20 @@ export default function LoginPage() {
                 </div>
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* Support Helpdesk Notice */}
+        <div className="pt-3 border-t border-slate-100 text-center text-[11px] text-slate-500 space-y-1">
+          <div>Dada Advisory Services LLP • Digital Loan Service Provider</div>
+          <div>
+            Need help? Contact Employee Helpdesk:{' '}
+            <a
+              href="mailto:support@dadaadvisoryservices.com"
+              className="font-semibold text-emerald-700 hover:underline"
+            >
+              support@dadaadvisoryservices.com
+            </a>
           </div>
         </div>
       </div>

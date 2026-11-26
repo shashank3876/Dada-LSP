@@ -4,9 +4,9 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 
 export const metadata: Metadata = {
-  title: 'Dada Advisory | Lending Service Provider (LSP) - EWA & Payroll Loans',
+  title: 'Dada Advisory Services LLP | Digital Loan Service Provider (LSP)',
   description:
-    'Dada Advisory connects corporate employers, employees, and partner NBFCs for ethical Earned Wage Access and Corporate Salary Advance loans.',
+    'Dada Advisory Services LLP is an enterprise Digital Loan Service Provider (LSP) partnering with RBI-regulated NBFCs to provide corporate employees with ethical personal loans and Earned Wage Access.',
   icons: {
     icon: [
       { url: '/icon.svg', type: 'image/svg+xml' },
