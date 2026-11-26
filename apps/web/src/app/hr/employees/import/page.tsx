@@ -1,15 +1,39 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Upload, FileText, CheckCircle2, AlertCircle, ArrowLeft, Download, Plus, Users, ShieldAlert } from 'lucide-react';
-import { apiRequest } from '@/lib/api';
+import { Upload, FileText, CheckCircle2, AlertCircle, ArrowLeft, Download, Plus, Users, ShieldAlert, LogIn } from 'lucide-react';
+import { apiRequest, getAuthToken, setAuthToken } from '@/lib/api';
 
 export default function HrEmployeeImportPage() {
   const [csvText, setCsvText] = useState('');
   const [importing, setImporting] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+  const [quickLoginLoading, setQuickLoginLoading] = useState(false);
+
+  useEffect(() => {
+    setIsAuthenticated(!!getAuthToken());
+  }, []);
+
+  const handleQuickHrLogin = async () => {
+    setQuickLoginLoading(true);
+    setError(null);
+    try {
+      const res = await apiRequest('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email: 'hr.admin@techcorp.in', password: 'DadaDemo@2026' }),
+      });
+      setAuthToken(res.accessToken);
+      localStorage.setItem('dada_user_profile', JSON.stringify(res.user));
+      setIsAuthenticated(true);
+    } catch (e: any) {
+      setError(e.message || 'HR login failed');
+    } finally {
+      setQuickLoginLoading(false);
+    }
+  };
 
   const sampleCsv = `employeeCode,firstName,lastName,officialEmail,department,designation,monthlyNetSalary,mobileNumber,panNumber
 TC-1005,Ananya,Iyer,ananya.i@techcorp.in,Engineering,Frontend Engineer,75000,+919820011005,AABCI1234F
@@ -26,6 +50,12 @@ TC-1007,Sneha,Patil,sneha.p@techcorp.in,Design,UI Designer,55000,+919820011007,C
     e.preventDefault();
     if (!csvText.trim()) {
       setError('Please provide CSV data to import.');
+      return;
+    }
+
+    if (!getAuthToken()) {
+      setError('You are not currently authenticated as HR Admin. Click "Authenticate as HR Admin" below first.');
+      setIsAuthenticated(false);
       return;
     }
 
@@ -60,7 +90,12 @@ TC-1007,Sneha,Patil,sneha.p@techcorp.in,Design,UI Designer,55000,+919820011007,C
 
       setResult(res);
     } catch (err: any) {
-      setError(err.message || 'Import failed');
+      if (err.message?.includes('401') || err.message?.includes('Unauthorized')) {
+        setIsAuthenticated(false);
+        setError('Session expired or unauthorized. Please re-authenticate as Corporate HR Admin.');
+      } else {
+        setError(err.message || 'Import failed');
+      }
     } finally {
       setImporting(false);
     }
@@ -93,6 +128,29 @@ TC-1007,Sneha,Patil,sneha.p@techcorp.in,Design,UI Designer,55000,+919820011007,C
           <span>Load Sample CSV</span>
         </button>
       </div>
+
+      {!isAuthenticated && (
+        <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <ShieldAlert className="w-5 h-5 shrink-0 text-amber-600" />
+            <div>
+              <div className="font-bold">Not Logged In as Corporate HR Admin</div>
+              <div className="text-[11px] text-amber-700">
+                You must have an active HR Admin session to import corporate employees.
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={handleQuickHrLogin}
+            disabled={quickLoginLoading}
+            className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-xs transition-all flex items-center gap-1.5 shrink-0 disabled:opacity-50"
+          >
+            <LogIn className="w-4 h-4" />
+            <span>{quickLoginLoading ? 'Authenticating...' : 'Authenticate as HR Admin'}</span>
+          </button>
+        </div>
+      )}
 
       {error && (
         <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
