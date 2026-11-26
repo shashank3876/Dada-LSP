@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { OrganizationsService } from './organizations.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -18,6 +18,22 @@ export class OrganizationsController {
   @ApiOperation({ summary: 'List all corporate organizations (Admin only)' })
   findAll() {
     return this.service.findAll();
+  }
+
+  @Post()
+  @Roles(UserRole.DADA_ADMIN, UserRole.DADA_SUPER_ADMIN)
+  @ApiOperation({ summary: 'Onboard a new corporate organization (Admin only)' })
+  create(
+    @Body()
+    body: {
+      code: string;
+      name: string;
+      cinNumber: string;
+      registeredAddress: string;
+      domain?: string;
+    },
+  ) {
+    return this.service.create(body);
   }
 
   @Get(':id')

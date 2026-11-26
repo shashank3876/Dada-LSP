@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma.service';
 import { EligibilityService } from '../eligibility/eligibility.service';
 import { ApplicationStatus } from '@dada/contracts';
@@ -10,7 +10,31 @@ export class EwaService {
     private eligibilityService: EligibilityService,
   ) {}
 
-  async apply(employeeId: string, requestedAmountPaise: number) {
+  async apply(employeeId: string, requestedAmountPaise: number, user?: any) {
+    if (!employeeId) {
+      throw new BadRequestException('Employee ID is required.');
+    }
+
+    const employee = await this.prisma.employee.findUnique({
+      where: { id: employeeId },
+      include: {
+        bankAccounts: { where: { isSalaryAccount: true } },
+        organization: true,
+      },
+    });
+
+    if (!employee) throw new NotFoundException('Employee not found');
+
+    // Multi-tenant validation: Prevent IDOR
+    if (user) {
+      if (user.role === 'EMPLOYEE' && employee.id !== user.employeeId) {
+        throw new ForbiddenException('Access denied: You can only apply for your own account.');
+      }
+      if (user.role.startsWith('HR_') && employee.organizationId !== user.organizationId) {
+        throw new ForbiddenException('Access denied: Employee belongs to another organization.');
+      }
+    }
+
     const eligibility = await this.eligibilityService.checkEwaEligibility(employeeId);
     if (!eligibility.isEligible) {
       throw new BadRequestException(eligibility.ineligibilityReason || 'Not eligible for EWA withdrawal.');
@@ -27,16 +51,6 @@ export class EwaService {
         `Minimum withdrawal allowed is ₹${eligibility.minWithdrawalAllowedPaise / 100}`,
       );
     }
-
-    const employee = await this.prisma.employee.findUnique({
-      where: { id: employeeId },
-      include: {
-        bankAccounts: { where: { isSalaryAccount: true } },
-        organization: true,
-      },
-    });
-
-    if (!employee) throw new NotFoundException('Employee not found');
     const bank = employee.bankAccounts[0];
     if (!bank) throw new BadRequestException('No verified salary bank account linked');
 

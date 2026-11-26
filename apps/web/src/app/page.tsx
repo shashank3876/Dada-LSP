@@ -19,32 +19,32 @@ import Calculator from '@/components/calculators/Calculator';
 
 export default function HomePage() {
   return (
-    <div className="space-y-14 sm:space-y-24 pb-14 sm:pb-20">
+    <div className="space-y-24 pb-20">
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-8 sm:pt-12 md:pt-16 pb-12 sm:pb-20 bg-gradient-to-b from-slate-100/80 via-white to-slate-50">
+      <section className="relative overflow-hidden pt-12 md:pt-16 pb-20 bg-gradient-to-b from-slate-100/80 via-white to-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto space-y-4 mb-8 sm:mb-12">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] sm:text-xs font-semibold max-w-full">
-              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span className="text-left">Compliant Lending Service Provider (LSP) Platform</span>
+          <div className="text-center max-w-3xl mx-auto space-y-4 mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              <span>Compliant Lending Service Provider (LSP) Platform</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-dada-950 tracking-tight leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-dada-950 tracking-tight leading-tight">
               Responsible Workplace Credit for <span className="text-emerald-600">Modern India</span>
             </h1>
-            <p className="text-sm sm:text-base md:text-lg text-slate-600 leading-relaxed">
+            <p className="text-base md:text-lg text-slate-600 leading-relaxed">
               Empower your corporate workforce with ethical, salary-linked credit solutions. Access wages earned on demand or affordable personal loans disbursed directly by RBI-registered NBFC partners.
             </p>
-            <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-center gap-3 sm:gap-4 pt-2">
+            <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
               <Link
                 href="/login"
-                className="px-6 py-3.5 bg-dada-900 hover:bg-dada-800 text-white font-bold rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2"
+                className="px-6 py-3.5 bg-dada-900 hover:bg-dada-800 text-white font-bold rounded-xl text-sm transition-all shadow-md flex items-center gap-2"
               >
                 <span>Access Employee Portal</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 href="/products"
-                className="px-6 py-3.5 bg-white hover:bg-slate-100 text-slate-700 font-semibold rounded-xl text-sm transition-all border border-slate-300 flex items-center justify-center"
+                className="px-6 py-3.5 bg-white hover:bg-slate-100 text-slate-700 font-semibold rounded-xl text-sm transition-all border border-slate-300"
               >
                 <span>Explore Products</span>
               </Link>
@@ -64,7 +64,7 @@ export default function HomePage() {
           <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-600">
             Tailored Financial Solutions
           </h2>
-          <p className="text-2xl sm:text-3xl font-extrabold text-dada-950">
+          <p className="text-3xl font-extrabold text-dada-950">
             Two Lending Products, One Unified Platform
           </p>
           <p className="text-sm text-slate-600">
@@ -74,13 +74,13 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* EWA Card */}
-          <div className="bg-white rounded-2xl p-5 sm:p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative flex flex-col justify-between">
+          <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative flex flex-col justify-between">
             <div className="space-y-6">
               <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
                 <Zap className="w-6 h-6 text-emerald-600" />
               </div>
               <div>
-                <h3 className="text-xl sm:text-2xl font-bold text-dada-950">Earned Wage Access (EWA)</h3>
+                <h3 className="text-2xl font-bold text-dada-950">Earned Wage Access (EWA)</h3>
                 <p className="text-sm text-slate-600 mt-2">
                   Allow employees to access up to 50% of the wages they have already earned before payday. Zero loan liability, zero interest, flat nominal convenience fee.
                 </p>
@@ -112,13 +112,13 @@ export default function HomePage() {
           </div>
 
           {/* Payroll Loan Card */}
-          <div className="bg-white rounded-2xl p-5 sm:p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative flex flex-col justify-between">
+          <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative flex flex-col justify-between">
             <div className="space-y-6">
               <div className="w-12 h-12 rounded-xl bg-dada-100 text-dada-900 flex items-center justify-center font-bold">
                 <TrendingUp className="w-6 h-6 text-dada-700" />
               </div>
               <div>
-                <h3 className="text-xl sm:text-2xl font-bold text-dada-950">Corporate Payroll Loan</h3>
+                <h3 className="text-2xl font-bold text-dada-950">Corporate Payroll Loan</h3>
                 <p className="text-sm text-slate-600 mt-2">
                   Salary-linked personal loans up to 3x monthly net salary with reducing-balance EMI schedules. Fully paperless underwriting powered by partner NBFCs.
                 </p>
@@ -152,13 +152,13 @@ export default function HomePage() {
       </section>
 
       {/* How it Works 4-Step Diagram */}
-      <section className="bg-slate-900 text-white py-12 sm:py-20">
+      <section className="bg-slate-900 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-16 space-y-3">
+          <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
             <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-400">
               Technology Workflow
             </h2>
-            <p className="text-2xl sm:text-3xl font-extrabold text-white">How the Platform Works</p>
+            <p className="text-3xl font-extrabold text-white">How the Platform Works</p>
             <p className="text-sm text-slate-400">
               A compliant, four-step digital journey connecting employee, employer, and partner NBFC.
             </p>
@@ -208,7 +208,7 @@ export default function HomePage() {
 
       {/* Trust & Regulatory Highlights */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-emerald-50 rounded-2xl p-5 sm:p-8 md:p-12 border border-emerald-200 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="bg-emerald-50 rounded-2xl p-8 md:p-12 border border-emerald-200 grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="space-y-2">
             <div className="text-3xl font-extrabold text-dada-950">100%</div>
             <div className="text-sm font-bold text-emerald-800">Direct NBFC Disbursement</div>

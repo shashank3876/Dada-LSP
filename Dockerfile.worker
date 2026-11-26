@@ -1,0 +1,25 @@
+# Dockerfile for Dada Advisory Background Worker Process
+FROM node:22-alpine AS builder
+WORKDIR /app
+RUN npm install -g pnpm@10.34.3
+
+COPY . .
+
+RUN pnpm install --frozen-lockfile
+RUN cd packages/database && npx prisma generate
+RUN pnpm --filter "@dada/*" build
+RUN pnpm --filter "worker" build
+
+FROM node:22-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
+COPY packages/ ./packages/
+COPY apps/worker/ ./apps/worker/
+COPY --from=builder /app/apps/worker/dist ./apps/worker/dist
+COPY --from=builder /app/packages/database/dist ./packages/database/dist
+COPY --from=builder /app/packages/contracts/dist ./packages/contracts/dist
+COPY --from=builder /app/node_modules ./node_modules
+
+CMD ["node", "apps/worker/dist/index.js"]

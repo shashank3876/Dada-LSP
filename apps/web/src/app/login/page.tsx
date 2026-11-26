@@ -2,17 +2,28 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Lock, Mail, ArrowRight, UserCheck, Shield, KeyRound, AlertCircle } from 'lucide-react';
+import { Lock, Mail, ArrowRight, UserCheck, Shield, KeyRound, AlertCircle, Building2, UserPlus, LogIn } from 'lucide-react';
 import { apiRequest, setAuthToken } from '@/lib/api';
 
 export default function LoginPage() {
   const router = useRouter();
+  const [authMode, setAuthMode] = useState<'LOGIN' | 'REGISTER'>('LOGIN');
+
+  // Login states
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('DadaDemo@2026');
-  const [otp, setOtp] = useState('');
-  const [step, setStep] = useState<'CREDENTIALS' | 'OTP'>('CREDENTIALS');
+
+  // Employee Registration states
+  const [regStep, setRegStep] = useState<'IDENTIFY' | 'VERIFY_OTP'>('IDENTIFY');
+  const [regOrgCode, setRegOrgCode] = useState('TECHCORP');
+  const [regEmpCode, setRegEmpCode] = useState('TC-1002');
+  const [regEmail, setRegEmail] = useState('priya.s@techcorp.in');
+  const [regOtp, setRegOtp] = useState('');
+  const [regPassword, setRegPassword] = useState('DadaDemo@2026');
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   // Demo accounts for instant 1-click test login
   const demoAccounts = [
@@ -70,6 +81,7 @@ export default function LoginPage() {
     if (e) e.preventDefault();
     setLoading(true);
     setError(null);
+    setSuccessMsg(null);
 
     try {
       const res = await apiRequest('/auth/login', {
@@ -95,11 +107,67 @@ export default function LoginPage() {
     }
   };
 
+  const handleInitiateRegistration = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSuccessMsg(null);
+
+    try {
+      const res = await apiRequest('/auth/initiate-registration', {
+        method: 'POST',
+        body: JSON.stringify({
+          organizationCode: regOrgCode,
+          employeeCode: regEmpCode,
+          officialEmail: regEmail,
+        }),
+      });
+      setRegStep('VERIFY_OTP');
+      setSuccessMsg(res.message);
+    } catch (err: any) {
+      setError(err.message || 'Verification initiation failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyRegistration = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSuccessMsg(null);
+
+    try {
+      const res = await apiRequest('/auth/register-employee', {
+        method: 'POST',
+        body: JSON.stringify({
+          organizationCode: regOrgCode,
+          employeeCode: regEmpCode,
+          officialEmail: regEmail,
+          otp: regOtp,
+          password: regPassword,
+        }),
+      });
+
+      setAuthToken(res.accessToken);
+      localStorage.setItem('dada_user_profile', JSON.stringify(res.user));
+      setSuccessMsg('OTP verified and account activated! Redirecting to employee portal...');
+      setTimeout(() => {
+        router.push('/employee/dashboard');
+      }, 1000);
+    } catch (err: any) {
+      setError(err.message || 'OTP verification failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleQuickLogin = async (account: (typeof demoAccounts)[0]) => {
     setEmail(account.email);
     setPassword('DadaDemo@2026');
     setLoading(true);
     setError(null);
+    setSuccessMsg(null);
 
     try {
       const res = await apiRequest('/auth/login', {
@@ -118,18 +186,48 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-8 sm:py-12">
-      <div className="max-w-md w-full space-y-6 sm:space-y-8 bg-white p-5 sm:p-8 rounded-2xl border border-slate-200 shadow-xl">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
+      <div className="max-w-md w-full space-y-6 bg-white p-8 rounded-2xl border border-slate-200 shadow-xl">
         <div className="text-center space-y-2">
           <div className="w-12 h-12 rounded-xl bg-dada-900 text-white flex items-center justify-center mx-auto shadow-md">
             <Lock className="w-6 h-6 text-emerald-400" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-dada-950 tracking-tight">
+          <h2 className="text-2xl font-extrabold text-dada-950 tracking-tight">
             Portal Authentication
           </h2>
           <p className="text-xs text-slate-500">
-            Sign in to your Employee, Corporate HR, or Dada Admin workspace.
+            Secure lending platform for Corporate Employers, Employees, and Partner NBFCs.
           </p>
+        </div>
+
+        {/* Tab Toggle: Sign In vs Register Employee */}
+        <div className="flex rounded-xl bg-slate-100 p-1 text-xs font-semibold">
+          <button
+            type="button"
+            onClick={() => {
+              setAuthMode('LOGIN');
+              setError(null);
+            }}
+            className={`flex-1 py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+              authMode === 'LOGIN' ? 'bg-white text-dada-950 shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <LogIn className="w-3.5 h-3.5" />
+            <span>Sign In</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setAuthMode('REGISTER');
+              setError(null);
+            }}
+            className={`flex-1 py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+              authMode === 'REGISTER' ? 'bg-white text-dada-950 shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <UserPlus className="w-3.5 h-3.5" />
+            <span>Employee Registration</span>
+          </button>
         </div>
 
         {error && (
@@ -139,63 +237,199 @@ export default function LoginPage() {
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-              Email Address
-            </label>
-            <div className="relative">
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
+        {successMsg && (
+          <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+            <Shield className="w-4 h-4 shrink-0 text-emerald-600" />
+            <span>{successMsg}</span>
+          </div>
+        )}
+
+        {authMode === 'LOGIN' ? (
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                Email Address
+              </label>
+              <div className="relative">
+                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@company.com"
+                  className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                Password
+              </label>
+              <div className="relative">
+                <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 bg-dada-900 hover:bg-dada-800 text-white font-bold rounded-lg text-sm transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {loading ? <span>Signing In...</span> : <span>Sign In to Portal</span>}
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </form>
+        ) : regStep === 'IDENTIFY' ? (
+          <form onSubmit={handleInitiateRegistration} className="space-y-3">
+            <div className="p-2.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-900 text-xs">
+              <strong>Step 1: Corporate Identity Verification</strong>
+              <div className="text-[11px] text-blue-700 mt-0.5">
+                Enter your employer and employee details to receive a statutory registration OTP.
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                Organization Code
+              </label>
+              <div className="relative">
+                <Building2 className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                <input
+                  type="text"
+                  required
+                  value={regOrgCode}
+                  onChange={(e) => setRegOrgCode(e.target.value.toUpperCase())}
+                  placeholder="e.g. TECHCORP"
+                  className="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-300 text-xs font-mono uppercase focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                Corporate Employee ID
+              </label>
               <input
-                type="email"
+                type="text"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@company.com"
-                className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                value={regEmpCode}
+                onChange={(e) => setRegEmpCode(e.target.value.toUpperCase())}
+                placeholder="e.g. TC-1002"
+                className="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs font-mono uppercase focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
-          </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-              Password
-            </label>
-            <div className="relative">
-              <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                Official Corporate Email
+              </label>
+              <div className="relative">
+                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                <input
+                  type="email"
+                  required
+                  value={regEmail}
+                  onChange={(e) => setRegEmail(e.target.value)}
+                  placeholder="e.g. priya.s@techcorp.in"
+                  className="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full mt-2 py-2.5 bg-dada-900 hover:bg-dada-800 text-white font-bold rounded-lg text-xs transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {loading ? <span>Verifying Roster...</span> : <span>Send Corporate OTP</span>}
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleVerifyRegistration} className="space-y-3">
+            <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs">
+              <strong>Step 2: Enter Verification OTP & Password</strong>
+              <div className="text-[11px] text-emerald-700 mt-0.5">
+                A verification code was sent to your corporate email. Enter it below to activate your account.
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                6-Digit Corporate OTP
+              </label>
               <input
-                type="password"
+                type="text"
                 required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                maxLength={6}
+                value={regOtp}
+                onChange={(e) => setRegOtp(e.target.value)}
+                placeholder="Enter 123456"
+                className="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs font-mono text-center tracking-widest font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-dada-900 hover:bg-dada-800 text-white font-bold rounded-lg text-sm transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
-          >
-            {loading ? <span>Signing In...</span> : <span>Sign In to Portal</span>}
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </form>
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                Create Account Password
+              </label>
+              <div className="relative">
+                <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  value={regPassword}
+                  onChange={(e) => setRegPassword(e.target.value)}
+                  placeholder="Minimum 8 characters"
+                  className="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full mt-2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {loading ? <span>Activating Account...</span> : <span>Verify OTP & Complete Registration</span>}
+              <ArrowRight className="w-4 h-4" />
+            </button>
+
+            <div className="text-center pt-1">
+              <button
+                type="button"
+                onClick={() => setRegStep('IDENTIFY')}
+                className="text-[11px] text-slate-500 hover:text-slate-700 font-semibold"
+              >
+                ← Change details / Re-send OTP
+              </button>
+            </div>
+          </form>
+        )}
 
         {/* 1-Click Interactive Demo Role Switcher */}
-        <div className="border-t border-slate-200 pt-6 space-y-3">
+        <div className="border-t border-slate-200 pt-5 space-y-2.5">
           <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wider">
             <UserCheck className="w-4 h-4 text-emerald-600" />
-            <span>1-Click Demo Accounts</span>
+            <span>1-Click Test Personas</span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          <div className="grid grid-cols-2 gap-2 text-xs">
             {demoAccounts.map((acc, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => handleQuickLogin(acc)}
-                className="text-left p-2.5 rounded-lg border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all flex flex-col justify-between"
+                className="text-left p-2 rounded-lg border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all flex flex-col justify-between"
               >
                 <div className="font-semibold text-slate-800 text-[11px] truncate">{acc.label}</div>
                 <div className="flex items-center justify-between mt-1">

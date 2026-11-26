@@ -78,12 +78,20 @@ export enum KYCStatus {
   FAILED = 'FAILED',
 }
 
+export enum ConsentPurpose {
+  KFS_ACCEPTANCE = 'KFS_ACCEPTANCE',
+  BUREAU_FETCH = 'BUREAU_FETCH',
+  NACH_MANDATE = 'NACH_MANDATE',
+  DATA_PROCESSING = 'DATA_PROCESSING',
+}
+
 export interface EwaPolicyConfig {
   maxEwaPercentage: number; // e.g. 50 (%)
   minWithdrawalPaise: number; // e.g. 100000 (Rs 1,000)
   maxWithdrawalPaise: number; // e.g. 5000000 (Rs 50,000)
   maxWithdrawalsPerCycle: number; // e.g. 2
   payrollCutoffDay: number; // e.g. 25
+  payrollFreezeDaysBeforeCutoff: number; // e.g. 3 days before cutoff
   flatConvenienceFeePaise: number; // e.g. 9900 (Rs 99)
 }
 
@@ -91,7 +99,10 @@ export interface PayrollLoanPolicyConfig {
   salaryMultiplier: number; // e.g. 3 (3x monthly net salary)
   maxTenureMonths: number; // e.g. 24
   minTenureMonths: number; // e.g. 6
+  provisionalTenuresMonths: number[]; // Configurable provisional tenures pending client/NBFC confirmation: e.g. [6, 12, 18, 24, 36]
   annualInterestRatePercent: number; // e.g. 14.5
   processingFeePercent: number; // e.g. 1.5
   maxFoirPercent: number; // e.g. 50 (%)
+  considerEwaInFoir?: boolean; // When true, active EWA obligations reduce FOIR capacity
+  maxCombinedDebtPaise?: number; // Optional cap on combined EWA + Payroll loan total exposure
 }

@@ -37,6 +37,9 @@ export class EligibilityService {
     };
 
     const alreadyWithdrawnPaise = employee.loans.reduce((sum, l) => sum + l.principalPaise, 0);
+    const activeMonthlyEmisPaise = employee.loans
+      .filter((l) => l.productType === 'PAYROLL_LOAN')
+      .reduce((sum, l) => sum + l.monthlyEmiPaise, 0);
 
     const calculation = calculateEwaEligibility({
       monthlyNetSalaryPaise: salary.monthlyNetPaise,
@@ -44,14 +47,16 @@ export class EligibilityService {
       approvedDaysWorked: attendance.totalApprovedWorkedDays,
       alreadyWithdrawnPaise,
       withdrawalCountInCycle: employee.loans.length,
-      activeMonthlyEmisPaise: 0,
+      activeMonthlyEmisPaise,
       employmentStatus: employee.employmentStatus as EmploymentStatus,
+      currentDayOfMonth: new Date().getDate(),
       policy: {
         maxEwaPercentage: policy.maxEwaPercentage,
         minWithdrawalPaise: policy.minEwaWithdrawalPaise,
         maxWithdrawalPaise: policy.maxEwaWithdrawalPaise,
         maxWithdrawalsPerCycle: policy.maxEwaWithdrawalsPerCycle,
         payrollCutoffDay: policy.payrollCutoffDay,
+        payrollFreezeDaysBeforeCutoff: policy.payrollFreezeDaysBeforeCutoff || 0,
         flatConvenienceFeePaise: policy.ewaFeePaise,
       },
     });
@@ -84,7 +89,7 @@ export class EligibilityService {
         organization: { include: { policies: true } },
         salaryRecords: { orderBy: { createdAt: 'desc' }, take: 1 },
         loans: {
-          where: { productType: 'PAYROLL_LOAN', status: 'ACTIVE' },
+          where: { status: 'ACTIVE' },
         },
       },
     });
@@ -94,19 +99,38 @@ export class EligibilityService {
     if (!policy) throw new BadRequestException('No corporate policy found');
 
     const salary = employee.salaryRecords[0] || { monthlyNetPaise: 6000000 };
-    const activeMonthlyEmisPaise = employee.loans.reduce((sum, l) => sum + l.monthlyEmiPaise, 0);
+    const activeMonthlyEmisPaise = employee.loans
+      .filter((l) => l.productType === 'PAYROLL_LOAN')
+      .reduce((sum, l) => sum + l.monthlyEmiPaise, 0);
+
+    const activeEwaObligationsPaise = employee.loans
+      .filter((l) => l.productType === 'EWA')
+      .reduce((sum, l) => sum + l.principalPaise, 0);
+
+    let provisionalTenuresMonths = [6, 12, 18, 24, 36];
+    if (policy.provisionalTenuresJson) {
+      try {
+        provisionalTenuresMonths = JSON.parse(policy.provisionalTenuresJson);
+      } catch (e) {
+        provisionalTenuresMonths = [6, 12, 18, 24, 36];
+      }
+    }
 
     const result = calculatePayrollLoanEligibility({
       monthlyNetSalaryPaise: salary.monthlyNetPaise,
       activeMonthlyEmisPaise,
+      activeEwaObligationsPaise,
       employmentStatus: employee.employmentStatus as EmploymentStatus,
       policy: {
         salaryMultiplier: policy.salaryMultiplier,
         minTenureMonths: policy.minTenureMonths,
         maxTenureMonths: policy.maxTenureMonths,
+        provisionalTenuresMonths,
         annualInterestRatePercent: policy.annualInterestRatePercent,
         processingFeePercent: policy.processingFeePercent,
         maxFoirPercent: policy.maxFoirPercent,
+        considerEwaInFoir: policy.considerEwaInFoir,
+        maxCombinedDebtPaise: policy.maxCombinedDebtPaise || undefined,
       },
     });
 
@@ -117,12 +141,15 @@ export class EligibilityService {
         monthlyNetSalaryPaise: salary.monthlyNetPaise,
         employmentStatus: employee.employmentStatus,
         activeMonthlyEmisPaise,
+        activeEwaObligationsPaise,
       },
       policy: {
         annualInterestRatePercent: policy.annualInterestRatePercent,
         processingFeePercent: policy.processingFeePercent,
         salaryMultiplier: policy.salaryMultiplier,
         maxFoirPercent: policy.maxFoirPercent,
+        provisionalTenuresMonths,
+        considerEwaInFoir: policy.considerEwaInFoir,
       },
       ...result,
     };

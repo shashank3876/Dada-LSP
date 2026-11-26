@@ -14,10 +14,12 @@ import {
   Users,
   Calendar,
   DollarSign,
+  Settings,
   Landmark,
   Building2,
   FileCheck2,
   LogOut,
+  Bell,
   Sliders,
   RefreshCw,
 } from 'lucide-react';
@@ -25,10 +27,9 @@ import { clearAuthToken } from '@/lib/api';
 
 interface PortalNavProps {
   portalType: 'EMPLOYEE' | 'HR' | 'ADMIN';
-  onNavigate?: () => void;
 }
 
-export default function PortalNav({ portalType, onNavigate }: PortalNavProps) {
+export default function PortalNav({ portalType }: PortalNavProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [userProfile, setUserProfile] = useState<any>(null);
@@ -44,7 +45,6 @@ export default function PortalNav({ portalType, onNavigate }: PortalNavProps) {
 
   const handleLogout = () => {
     clearAuthToken();
-    onNavigate?.();
     router.push('/login');
   };
 
@@ -73,6 +73,7 @@ export default function PortalNav({ portalType, onNavigate }: PortalNavProps) {
   const adminLinks = [
     { name: 'Executive Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
     { name: 'Organizations', href: '/admin/organizations', icon: Building2 },
+    { name: 'Corporate Policies', href: '/admin/policies', icon: Sliders },
     { name: 'Loan Applications', href: '/admin/loan-applications', icon: FileCheck2 },
     { name: 'NBFC Partners & Simulator', href: '/admin/nbfc-partners', icon: Landmark },
     { name: 'Global Reconciliation', href: '/admin/reconciliation', icon: RotateCcw },
@@ -97,10 +98,11 @@ export default function PortalNav({ portalType, onNavigate }: PortalNavProps) {
       : 'bg-purple-500/20 text-purple-400 border-purple-500/30';
 
   return (
-    <aside className="w-full h-full bg-dada-950 text-slate-300 flex flex-col justify-between border-r border-dada-800 shrink-0 overflow-y-auto">
+    <aside className="w-64 bg-dada-950 text-slate-300 flex flex-col justify-between border-r border-dada-800 shrink-0 min-h-screen">
       <div>
-        <div className="p-5 border-b border-dada-800 pr-14 lg:pr-5">
-          <Link href="/" onClick={onNavigate} className="flex items-center gap-2.5">
+        {/* Portal Header */}
+        <div className="p-5 border-b border-dada-800">
+          <Link href="/" className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-emerald-500 text-dada-950 flex items-center justify-center font-extrabold text-base shadow">
               D
             </div>
@@ -122,6 +124,7 @@ export default function PortalNav({ portalType, onNavigate }: PortalNavProps) {
           </div>
         </div>
 
+        {/* Navigation links */}
         <nav className="p-3 space-y-1">
           {links.map((link) => {
             const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
@@ -129,7 +132,6 @@ export default function PortalNav({ portalType, onNavigate }: PortalNavProps) {
               <Link
                 key={link.href}
                 href={link.href}
-                onClick={onNavigate}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all ${
                   isActive
                     ? 'bg-emerald-600 text-white shadow-sm'
@@ -144,6 +146,7 @@ export default function PortalNav({ portalType, onNavigate }: PortalNavProps) {
         </nav>
       </div>
 
+      {/* User profile & Logout */}
       <div className="p-4 border-t border-dada-800 space-y-3">
         <div className="bg-dada-900/80 p-3 rounded-xl border border-dada-800 text-xs space-y-1">
           <div className="font-bold text-white truncate">

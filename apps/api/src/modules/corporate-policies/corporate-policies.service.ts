@@ -8,9 +8,17 @@ export class CorporatePoliciesService {
   async findByOrganization(organizationId: string) {
     const policy = await this.prisma.corporatePolicy.findFirst({
       where: { organizationId, isActive: true },
+      include: { organization: true },
     });
     if (!policy) throw new NotFoundException('Corporate policy not configured');
     return policy;
+  }
+
+  async findAll() {
+    return this.prisma.corporatePolicy.findMany({
+      include: { organization: true },
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
   async updatePolicy(organizationId: string, data: any) {

@@ -95,7 +95,7 @@ export default function AdminDashboardPage() {
               0% Interest
             </span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center text-xs">
+          <div className="grid grid-cols-3 gap-2 text-center text-xs">
             <div className="p-3 bg-slate-50 rounded-xl">
               <div className="text-slate-500">Total Requests</div>
               <div className="text-lg font-bold text-slate-900 mt-1">{stats?.productBreakdown?.ewa?.total || 1}</div>
@@ -121,7 +121,7 @@ export default function AdminDashboardPage() {
               EMI Personal Loans
             </span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center text-xs">
+          <div className="grid grid-cols-3 gap-2 text-center text-xs">
             <div className="p-3 bg-slate-50 rounded-xl">
               <div className="text-slate-500">Total Requests</div>
               <div className="text-lg font-bold text-slate-900 mt-1">{stats?.productBreakdown?.payrollLoan?.total || 2}</div>

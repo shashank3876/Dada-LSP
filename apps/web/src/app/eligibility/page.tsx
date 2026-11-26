@@ -4,9 +4,9 @@ import { CheckCircle2, AlertTriangle } from 'lucide-react';
 
 export default function EligibilityPage() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
       <div className="max-w-3xl space-y-4">
-        <h1 className="text-2xl sm:text-4xl font-extrabold text-dada-950 tracking-tight">
+        <h1 className="text-4xl font-extrabold text-dada-950 tracking-tight">
           Eligibility & Policy Guidelines
         </h1>
         <p className="text-base text-slate-600">

@@ -25,9 +25,9 @@ export default function FaqPage() {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-12">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
       <div className="text-center space-y-3">
-        <h1 className="text-2xl sm:text-4xl font-extrabold text-dada-950 tracking-tight">
+        <h1 className="text-4xl font-extrabold text-dada-950 tracking-tight">
           Frequently Asked Questions
         </h1>
         <p className="text-sm text-slate-600">

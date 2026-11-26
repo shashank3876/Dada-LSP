@@ -13,6 +13,13 @@ export class AttendanceService {
     });
   }
 
+  async findEmployeeOrg(employeeId: string) {
+    return this.prisma.employee.findUnique({
+      where: { id: employeeId },
+      select: { organizationId: true },
+    });
+  }
+
   async findAll(organizationId?: string, month = 11, year = 2026) {
     const where: any = { month, year };
     if (organizationId) {
@@ -117,6 +124,7 @@ export class AttendanceService {
         maxWithdrawalPaise: policy.maxEwaWithdrawalPaise,
         maxWithdrawalsPerCycle: policy.maxEwaWithdrawalsPerCycle,
         payrollCutoffDay: policy.payrollCutoffDay,
+        payrollFreezeDaysBeforeCutoff: policy.payrollFreezeDaysBeforeCutoff || 0,
         flatConvenienceFeePaise: policy.ewaFeePaise,
       },
     });

@@ -18,32 +18,31 @@ export class LoanApplicationsController {
     @CurrentUser() user: any,
     @Query('productType') productType?: string,
     @Query('status') status?: string,
+    @Query('employeeId') employeeId?: string,
+    @Query('organizationId') organizationId?: string,
   ) {
-    let orgId: string | undefined;
-    let empId: string | undefined;
+    return this.service.findAll({ organizationId, employeeId, productType, status }, user);
+  }
 
-    if (user.role === 'EMPLOYEE') {
-      empId = user.employeeId;
-    } else if (user.role.startsWith('HR_')) {
-      orgId = user.organizationId;
-    }
-
-    return this.service.findAll({ organizationId: orgId, employeeId: empId, productType, status });
+  @Get('my-loans')
+  @ApiOperation({ summary: 'Get active loans and repayment schedules for current employee' })
+  getMyLoans(@CurrentUser() user: any) {
+    return this.service.findEmployeeLoans(user);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get application details and status stepper' })
-  findOne(@Param('id') id: string) {
-    return this.service.findOne(id);
+  @ApiOperation({ summary: 'Get application details and status stepper (Tenant Scoped)' })
+  findOne(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.service.findOne(id, user);
   }
 
   @Post(':id/transition')
-  @ApiOperation({ summary: 'Transition application state (Admin / Demo)' })
+  @ApiOperation({ summary: 'Transition application state (Validated State Machine)' })
   transition(
     @Param('id') id: string,
-    @Body() body: { toStatus: ApplicationStatus; remarks: string },
+    @Body() body: { toStatus: ApplicationStatus; remarks?: string },
     @CurrentUser() user: any,
   ) {
-    return this.service.transitionStatus(id, body.toStatus, user.role, body.remarks);
+    return this.service.transitionStatus(id, body.toStatus, user, body.remarks);
   }
 }

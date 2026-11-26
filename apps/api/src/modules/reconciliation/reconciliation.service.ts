@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma.service';
 import { ReconciliationExceptionType } from '@dada/contracts';
 
@@ -20,8 +20,16 @@ export class ReconciliationService {
     });
   }
 
-  async getExceptions() {
+  async getExceptions(organizationId?: string) {
+    const where: any = {};
+    if (organizationId) {
+      where.payrollBatchItem = {
+        payrollBatch: { organizationId },
+      };
+    }
+
     return this.prisma.reconciliationException.findMany({
+      where,
       include: {
         reconciliationRecord: {
           include: {
@@ -56,18 +64,25 @@ export class ReconciliationService {
   /**
    * Upload Remittance from HR and perform automated reconciliation
    */
-  async uploadRemittance(data: {
-    payrollBatchId: string;
-    utrNumber: string;
-    remittedAmountPaise: number;
-    notes?: string;
-  }) {
+  async uploadRemittance(
+    data: {
+      payrollBatchId: string;
+      utrNumber: string;
+      remittedAmountPaise: number;
+      notes?: string;
+    },
+    user?: any,
+  ) {
     const batch = await this.prisma.payrollBatch.findUnique({
       where: { id: data.payrollBatchId },
       include: { items: { include: { loan: true, employee: true } }, organization: true },
     });
 
     if (!batch) throw new NotFoundException('Payroll batch not found');
+
+    if (user && user.role.startsWith('HR_') && batch.organizationId !== user.organizationId) {
+      throw new ForbiddenException('Access denied: Payroll batch belongs to another organization.');
+    }
 
     const nbfc = await this.prisma.nBFCPartner.findFirst({ where: { isActive: true } });
 

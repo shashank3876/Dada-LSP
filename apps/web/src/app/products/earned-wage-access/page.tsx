@@ -5,13 +5,13 @@ import Calculator from '@/components/calculators/Calculator';
 
 export default function EwaProductPage() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-16">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-16">
       <div className="max-w-3xl space-y-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold">
           <Zap className="w-4 h-4 text-emerald-600" />
           <span>On-Demand Earned Wage Access</span>
         </div>
-        <h1 className="text-2xl sm:text-4xl font-extrabold text-dada-950 tracking-tight">
+        <h1 className="text-4xl font-extrabold text-dada-950 tracking-tight">
           Access Wages You Have Already Earned
         </h1>
         <p className="text-base text-slate-600 leading-relaxed">

@@ -6,13 +6,11 @@ build/
 *.tsbuildinfo
 .env
 .env.local
+.env.*
+*.db
+*.db-journal
 coverage/
 *.log
 .DS_Store
 *.sqlite
 *.sqlite-journal
-*.db
-*.db-journal
-.neon
-.vercel
-.env*

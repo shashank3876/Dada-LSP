@@ -17,7 +17,11 @@ export class EwaController {
     @CurrentUser() user: any,
     @Body() body: { requestedAmountPaise: number; employeeId?: string },
   ) {
-    const employeeId = body.employeeId || user.employeeId;
-    return this.service.apply(employeeId, body.requestedAmountPaise);
+    // Multi-tenant security: Employees can only submit for themselves
+    let targetEmployeeId = user.employeeId;
+    if (user.role.startsWith('HR_') || user.role.startsWith('DADA_')) {
+      targetEmployeeId = body.employeeId || user.employeeId;
+    }
+    return this.service.apply(targetEmployeeId, body.requestedAmountPaise, user);
   }
 }

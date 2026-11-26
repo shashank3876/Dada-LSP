@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma.service';
 import { EligibilityService } from '../eligibility/eligibility.service';
 import { calculatePayrollLoanEmi, ApplicationStatus } from '@dada/contracts';
@@ -17,16 +17,13 @@ export class PayrollLoansService {
     });
   }
 
-  async apply(employeeId: string, data: { requestedAmountPaise: number; tenureMonths: number; purpose: string }) {
-    const eligibility = await this.eligibilityService.checkPayrollLoanEligibility(employeeId);
-    if (!eligibility.isEligible) {
-      throw new BadRequestException(eligibility.ineligibilityReason || 'Not eligible for payroll loan');
-    }
-
-    if (data.requestedAmountPaise > eligibility.maxLoanAmountPaise) {
-      throw new BadRequestException(
-        `Requested loan ₹${data.requestedAmountPaise / 100} exceeds permissible limit of ₹${eligibility.maxLoanAmountPaise / 100}`,
-      );
+  async apply(
+    employeeId: string,
+    data: { requestedAmountPaise: number; tenureMonths: number; purpose: string },
+    user?: any,
+  ) {
+    if (!employeeId) {
+      throw new BadRequestException('Employee ID is required.');
     }
 
     const employee = await this.prisma.employee.findUnique({
@@ -38,6 +35,28 @@ export class PayrollLoansService {
     });
 
     if (!employee) throw new NotFoundException('Employee not found');
+
+    // Multi-tenant validation: Prevent IDOR
+    if (user) {
+      if (user.role === 'EMPLOYEE' && employee.id !== user.employeeId) {
+        throw new ForbiddenException('Access denied: You can only apply for your own account.');
+      }
+      if (user.role.startsWith('HR_') && employee.organizationId !== user.organizationId) {
+        throw new ForbiddenException('Access denied: Employee belongs to another organization.');
+      }
+    }
+
+    const eligibility = await this.eligibilityService.checkPayrollLoanEligibility(employeeId);
+    if (!eligibility.isEligible) {
+      throw new BadRequestException(eligibility.ineligibilityReason || 'Not eligible for payroll loan');
+    }
+
+    if (data.requestedAmountPaise > eligibility.maxLoanAmountPaise) {
+      throw new BadRequestException(
+        `Requested loan ₹${data.requestedAmountPaise / 100} exceeds permissible limit of ₹${eligibility.maxLoanAmountPaise / 100}`,
+      );
+    }
+
     const bank = employee.bankAccounts[0];
     const nbfc = await this.prisma.nBFCPartner.findFirst({ where: { isActive: true } });
 

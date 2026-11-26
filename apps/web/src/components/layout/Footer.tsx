@@ -4,9 +4,9 @@ import { Shield, Building2, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-dada-950 text-slate-300 pt-10 sm:pt-16 pb-10 sm:pb-12 border-t border-slate-800">
+    <footer className="bg-dada-950 text-slate-300 pt-16 pb-12 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 pb-10 sm:pb-12 border-b border-slate-800">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-slate-800">
           {/* Company info */}
           <div className="space-y-4">
             <div className="flex items-center gap-2.5">
@@ -102,9 +102,9 @@ export default function Footer() {
           </p>
         </div>
 
-        <div className="mt-8 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 gap-4 text-center md:text-left">
+        <div className="mt-8 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 gap-4">
           <div>© {new Date().getFullYear()} Dada Advisory Services Pvt Ltd. All rights reserved.</div>
-          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+          <div className="flex gap-6">
             <Link href="/faq" className="hover:text-slate-400">Privacy Policy</Link>
             <Link href="/faq" className="hover:text-slate-400">Fair Practices Code</Link>
             <Link href="/faq" className="hover:text-slate-400">Terms of Service</Link>

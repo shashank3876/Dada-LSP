@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma.service';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class PayrollService {
     });
   }
 
-  async getBatchById(id: string) {
+  async getBatchById(id: string, user?: any) {
     const batch = await this.prisma.payrollBatch.findUnique({
       where: { id },
       include: {
@@ -39,13 +39,21 @@ export class PayrollService {
       },
     });
     if (!batch) throw new NotFoundException('Payroll batch not found');
+
+    if (user && user.role.startsWith('HR_') && batch.organizationId !== user.organizationId) {
+      throw new ForbiddenException('Access denied: Batch belongs to another organization.');
+    }
+
     return batch;
   }
 
   /**
    * Generates Payroll Deduction Batch for organization cutoff cycle
    */
-  async generateBatch(organizationId: string, month = 11, year = 2026) {
+  async generateBatch(organizationId: string, month = 11, year = 2026, user?: any) {
+    if (user && user.role.startsWith('HR_') && organizationId !== user.organizationId) {
+      throw new ForbiddenException('Access denied: Cannot generate batch for another organization.');
+    }
     // 1. Fetch active loans due in this cycle
     const activeLoans = await this.prisma.loan.findMany({
       where: {

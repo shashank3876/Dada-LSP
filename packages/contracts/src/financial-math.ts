@@ -9,6 +9,7 @@ export interface EwaCalculationInput {
   activeMonthlyEmisPaise: number;
   employmentStatus: EmploymentStatus;
   policy: EwaPolicyConfig;
+  currentDayOfMonth?: number; // Optional day of month for cutoff/freeze verification
 }
 
 export interface EwaCalculationResult {
@@ -33,9 +34,10 @@ export function calculateEwaEligibility(input: EwaCalculationInput): EwaCalculat
     activeMonthlyEmisPaise,
     employmentStatus,
     policy,
+    currentDayOfMonth,
   } = input;
 
-  // Notice period, suspended, or terminated employees have ZERO eligibility
+  // 1. Notice period, suspended, or terminated employees have ZERO eligibility
   if (
     employmentStatus === EmploymentStatus.NOTICE_PERIOD ||
     employmentStatus === EmploymentStatus.SUSPENDED ||
@@ -54,28 +56,46 @@ export function calculateEwaEligibility(input: EwaCalculationInput): EwaCalculat
     };
   }
 
+  // 2. Payroll cutoff and freeze enforcement
+  if (currentDayOfMonth !== undefined && policy.payrollCutoffDay) {
+    const freezeStartDay = policy.payrollCutoffDay - (policy.payrollFreezeDaysBeforeCutoff || 0);
+    if (currentDayOfMonth >= freezeStartDay) {
+      return {
+        dailyNetWagePaise: 0,
+        grossEarnedWagePaise: 0,
+        eligibleEarnedCapPaise: 0,
+        availableEwaPaise: 0,
+        isEligible: false,
+        ineligibilityReason: `Payroll cycle is currently frozen for reconciliation cutoff (Day ${freezeStartDay} through Day ${policy.payrollCutoffDay}). New EWA withdrawals resume in the next cycle.`,
+        maxWithdrawalAllowedPaise: 0,
+        minWithdrawalAllowedPaise: policy.minWithdrawalPaise,
+        remainingWithdrawalsInCycle: Math.max(0, policy.maxWithdrawalsPerCycle - withdrawalCountInCycle),
+      };
+    }
+  }
+
   if (totalPayableDaysInMonth <= 0) {
     throw new Error('Total payable days in month must be greater than zero');
   }
 
-  // 1. Daily net wage = Monthly net salary / Total payable days in month
+  // 3. Daily net wage = floor(Monthly net salary / Total payable days in month)
   const dailyNetWagePaise = Math.floor(monthlyNetSalaryPaise / totalPayableDaysInMonth);
 
-  // 2. Gross earned wage = Daily net wage * Approved payable days worked
+  // 4. Gross earned wage = Daily net wage * Approved payable days worked
   const grossEarnedWagePaise = dailyNetWagePaise * Math.max(0, approvedDaysWorked);
 
-  // 3. Gross earned wage * EWA cap percentage
+  // 5. Eligible earned cap = floor(Gross earned wage * EWA cap percentage / 100)
   const eligibleEarnedCapPaise = Math.floor(
     (grossEarnedWagePaise * policy.maxEwaPercentage) / 100
   );
 
-  // 4. Available EWA = Cap - Already withdrawn - Applicable existing monthly EMIs
+  // 6. Available EWA = Cap - Already withdrawn - Applicable existing monthly EMIs
   let availableEwaPaise = eligibleEarnedCapPaise - alreadyWithdrawnPaise - activeMonthlyEmisPaise;
   if (availableEwaPaise < 0) {
     availableEwaPaise = 0;
   }
 
-  // Cap at policy max withdrawal
+  // 7. Enforce EWA maximum withdrawal limit (₹50,000 / policy limit)
   const maxPossible = Math.min(availableEwaPaise, policy.maxWithdrawalPaise);
 
   const remainingWithdrawalsInCycle = Math.max(
@@ -86,12 +106,14 @@ export function calculateEwaEligibility(input: EwaCalculationInput): EwaCalculat
   let isEligible = true;
   let ineligibilityReason: string | undefined;
 
+  // 8. Enforce maximum withdrawals per cycle (default max 2)
   if (remainingWithdrawalsInCycle <= 0) {
     isEligible = false;
     ineligibilityReason = `Maximum withdrawals per cycle limit reached (${policy.maxWithdrawalsPerCycle}/${policy.maxWithdrawalsPerCycle}).`;
   } else if (maxPossible < policy.minWithdrawalPaise) {
+    // 9. Enforce minimum withdrawal threshold (₹1,000 / policy limit)
     isEligible = false;
-    ineligibilityReason = `Available earned wage amount is less than the minimum withdrawal limit of ₹${(policy.minWithdrawalPaise / 100).toLocaleString('en-IN')}.`;
+    ineligibilityReason = `Available earned wage amount (₹${(maxPossible / 100).toLocaleString('en-IN')}) is less than the minimum withdrawal limit of ₹${(policy.minWithdrawalPaise / 100).toLocaleString('en-IN')}.`;
   }
 
   return {
@@ -174,6 +196,7 @@ export interface PayrollLoanEligibilityInput {
   activeMonthlyEmisPaise: number;
   employmentStatus: EmploymentStatus;
   policy: PayrollLoanPolicyConfig;
+  activeEwaObligationsPaise?: number; // Current cycle active EWA withdrawals
 }
 
 export interface PayrollLoanEligibilityResult {
@@ -183,16 +206,24 @@ export interface PayrollLoanEligibilityResult {
   isEligible: boolean;
   ineligibilityReason?: string;
   allowedTenuresMonths: number[];
+  consideredEwaInFoir: boolean;
 }
 
 export function calculatePayrollLoanEligibility(
   input: PayrollLoanEligibilityInput
 ): PayrollLoanEligibilityResult {
-  const { monthlyNetSalaryPaise, activeMonthlyEmisPaise, employmentStatus, policy } = input;
+  const { monthlyNetSalaryPaise, activeMonthlyEmisPaise, employmentStatus, policy, activeEwaObligationsPaise = 0 } = input;
 
-  const allowedTenuresMonths = [6, 12, 18, 24].filter(
+  // Use dynamically configured provisional tenures (or fall back to standard [6, 12, 18, 24, 36])
+  const candidateTenures = policy.provisionalTenuresMonths && policy.provisionalTenuresMonths.length > 0
+    ? policy.provisionalTenuresMonths
+    : [6, 12, 18, 24, 36];
+
+  const allowedTenuresMonths = candidateTenures.filter(
     (t) => t >= policy.minTenureMonths && t <= policy.maxTenureMonths
   );
+
+  const shouldConsiderEwa = policy.considerEwaInFoir !== false;
 
   if (
     employmentStatus === EmploymentStatus.NOTICE_PERIOD ||
@@ -206,34 +237,64 @@ export function calculatePayrollLoanEligibility(
       isEligible: false,
       ineligibilityReason: `Employees in ${employmentStatus} status are not eligible for payroll loans.`,
       allowedTenuresMonths,
+      consideredEwaInFoir: shouldConsiderEwa,
     };
   }
 
-  // FOIR check: Max total monthly EMI obligations = (Salary * maxFoirPercent) / 100
+  // Combined FOIR check: Factor in active EWA obligations if policy enables it
+  const effectiveMonthlyObligationsPaise =
+    activeMonthlyEmisPaise + (shouldConsiderEwa ? activeEwaObligationsPaise : 0);
+
   const totalAllowedEmiPaise = Math.floor(
     (monthlyNetSalaryPaise * policy.maxFoirPercent) / 100
   );
-  const availableEmiCapacityPaise = totalAllowedEmiPaise - activeMonthlyEmisPaise;
+  const availableEmiCapacityPaise = totalAllowedEmiPaise - effectiveMonthlyObligationsPaise;
 
   if (availableEmiCapacityPaise <= 0) {
+    const ewaDetail = shouldConsiderEwa && activeEwaObligationsPaise > 0
+      ? ` (including active EWA obligation of ₹${(activeEwaObligationsPaise / 100).toLocaleString('en-IN')})`
+      : '';
     return {
       maxLoanAmountPaise: 0,
       minLoanAmountPaise: 0,
       maxFoirAllowedEmiPaise: 0,
       isEligible: false,
-      ineligibilityReason: `Existing monthly EMI obligations (₹${(activeMonthlyEmisPaise / 100).toLocaleString('en-IN')}) exceed maximum permissible FOIR cap of ${policy.maxFoirPercent}%.`,
+      ineligibilityReason: `Existing monthly debt obligations of ₹${(effectiveMonthlyObligationsPaise / 100).toLocaleString('en-IN')}${ewaDetail} exceed maximum permissible FOIR cap of ${policy.maxFoirPercent}%.`,
       allowedTenuresMonths,
+      consideredEwaInFoir: shouldConsiderEwa,
     };
   }
 
-  // Salary multiplier cap
+  // Salary multiplier cap (e.g. 3x net salary)
   const maxMultiplierLoanPaise = monthlyNetSalaryPaise * policy.salaryMultiplier;
 
+  // Combined exposure cap if configured
+  let maxLoanAmountPaise = maxMultiplierLoanPaise;
+  if (policy.maxCombinedDebtPaise && policy.maxCombinedDebtPaise > 0) {
+    const remainingExposurePaise = Math.max(0, policy.maxCombinedDebtPaise - activeEwaObligationsPaise);
+    maxLoanAmountPaise = Math.min(maxMultiplierLoanPaise, remainingExposurePaise);
+  }
+
+  const minLoanAmountPaise = 2500000; // Rs 25,000 minimum
+
+  if (maxLoanAmountPaise < minLoanAmountPaise) {
+    return {
+      maxLoanAmountPaise: 0,
+      minLoanAmountPaise,
+      maxFoirAllowedEmiPaise: availableEmiCapacityPaise,
+      isEligible: false,
+      ineligibilityReason: `Calculated eligible loan amount (₹${(maxLoanAmountPaise / 100).toLocaleString('en-IN')}) is below minimum loan requirement of ₹${(minLoanAmountPaise / 100).toLocaleString('en-IN')}.`,
+      allowedTenuresMonths,
+      consideredEwaInFoir: shouldConsiderEwa,
+    };
+  }
+
   return {
-    maxLoanAmountPaise: maxMultiplierLoanPaise,
-    minLoanAmountPaise: 2500000, // Rs 25,000 minimum
+    maxLoanAmountPaise,
+    minLoanAmountPaise,
     maxFoirAllowedEmiPaise: availableEmiCapacityPaise,
     isEligible: true,
     allowedTenuresMonths,
+    consideredEwaInFoir: shouldConsiderEwa,
   };
 }

@@ -21,16 +21,18 @@ export class ReconciliationController {
 
   @Get('exceptions')
   @ApiOperation({ summary: 'List all open and resolved reconciliation exceptions' })
-  getExceptions() {
-    return this.service.getExceptions();
+  getExceptions(@CurrentUser() user: any) {
+    const orgId = user?.role?.startsWith('HR_') ? user.organizationId : undefined;
+    return this.service.getExceptions(orgId);
   }
 
   @Post('upload-remittance')
-  @ApiOperation({ summary: 'Upload employer remittance information with UTR' })
+  @ApiOperation({ summary: 'Upload employer remittance information with UTR (Tenant Scoped)' })
   uploadRemittance(
+    @CurrentUser() user: any,
     @Body() body: { payrollBatchId: string; utrNumber: string; remittedAmountPaise: number; notes?: string },
   ) {
-    return this.service.uploadRemittance(body);
+    return this.service.uploadRemittance(body, user);
   }
 
   @Post('exceptions/:id/resolve')

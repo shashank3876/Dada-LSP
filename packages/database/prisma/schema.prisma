@@ -40,9 +40,15 @@ model User {
   organization    Organization? @relation(fields: [organizationId], references: [id])
   employeeId      String?      @unique
   employee        Employee?    @relation(fields: [employeeId], references: [id])
-  lastLoginAt     DateTime?
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  lastLoginAt          DateTime?
+  failedLoginAttempts  Int          @default(0)
+  lockedUntil          DateTime?
+  failedOtpAttempts    Int          @default(0)
+  otpLockedUntil       DateTime?
+  passwordResetToken   String?      // Stores SHA-256 hash of reset token
+  passwordResetExpires DateTime?
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
 
   notifications   Notification[]
   auditEvents     AuditEvent[]
@@ -145,21 +151,25 @@ model CorporatePolicy {
   organizationId             String
   organization               Organization @relation(fields: [organizationId], references: [id])
   // EWA settings
-  maxEwaPercentage           Int          @default(50) // 50%
-  minEwaWithdrawalPaise      Int          @default(100000) // Rs 1,000
-  maxEwaWithdrawalPaise      Int          @default(5000000) // Rs 50,000
-  maxEwaWithdrawalsPerCycle  Int          @default(2)
-  payrollCutoffDay           Int          @default(25)
-  ewaFeePaise                Int          @default(9900) // Rs 99
+  maxEwaPercentage              Int          @default(50) // 50%
+  minEwaWithdrawalPaise         Int          @default(100000) // Rs 1,000
+  maxEwaWithdrawalPaise         Int          @default(5000000) // Rs 50,000
+  maxEwaWithdrawalsPerCycle     Int          @default(2)
+  payrollCutoffDay              Int          @default(25)
+  payrollFreezeDaysBeforeCutoff Int          @default(0) // Days prior to cutoff when EWA is frozen
+  ewaFeePaise                   Int          @default(9900) // Rs 99
   // Payroll Loan settings
-  allowPayrollLoans          Boolean      @default(true)
-  salaryMultiplier           Int          @default(3) // 3x net salary
-  minTenureMonths            Int          @default(6)
-  maxTenureMonths            Int          @default(24)
-  annualInterestRatePercent  Float        @default(14.5)
-  processingFeePercent       Float        @default(1.5)
-  maxFoirPercent             Int          @default(50)
-  isActive                   Boolean      @default(true)
+  allowPayrollLoans             Boolean      @default(true)
+  salaryMultiplier              Int          @default(3) // 3x net salary
+  minTenureMonths               Int          @default(6)
+  maxTenureMonths               Int          @default(36)
+  provisionalTenuresJson        String       @default("[6, 12, 18, 24, 36]") // Configurable provisional tenures pending client/NBFC confirmation
+  annualInterestRatePercent     Float        @default(14.5)
+  processingFeePercent          Float        @default(1.5)
+  maxFoirPercent                Int          @default(50)
+  considerEwaInFoir             Boolean      @default(true)
+  maxCombinedDebtPaise          Int?
+  isActive                      Boolean      @default(true)
   createdAt                  DateTime     @default(now())
   updatedAt                  DateTime     @updatedAt
 }
@@ -235,6 +245,7 @@ model LoanApplication {
   rejectionReason       String?
   nbfcApplicationRef    String?
   kfsDocumentId         String?
+  kfsAcceptedAt         DateTime?
   agreementDocumentId   String?
   mandateId             String?
   eSignedAt             DateTime?
@@ -247,6 +258,9 @@ model LoanApplication {
   statusHistory         ApplicationStatusHistory[]
   loan                  Loan?
   documents             Document[]
+
+  @@index([organizationId, status])
+  @@index([employeeId, status])
 }
 
 model EWAApplication {
@@ -313,6 +327,9 @@ model Loan {
   repaymentSchedules    RepaymentSchedule[]
   repayments            Repayment[]
   payrollBatchItems     PayrollBatchItem[]
+
+  @@index([employeeId, status])
+  @@index([nbfcPartnerId, status])
 }
 
 model RepaymentSchedule {
@@ -449,6 +466,8 @@ model PayrollBatch {
 
   items          PayrollBatchItem[]
   remittances    EmployerRemittance[]
+
+  @@unique([organizationId, year, month])
 }
 
 model PayrollBatchItem {
@@ -491,7 +510,7 @@ model EmployerRemittance {
 
 model ReconciliationRecord {
   id                   String             @id @default(uuid())
-  employerRemittanceId String
+  employerRemittanceId String             @unique
   employerRemittance   EmployerRemittance @relation(fields: [employerRemittanceId], references: [id])
   expectedAmountPaise  Int
   actualAmountPaise    Int
@@ -522,6 +541,7 @@ model ReconciliationException {
 
 model WebhookEvent {
   id            String    @id @default(uuid())
+  eventId       String?   @unique
   source        String    // NBFC, HRMS, BANK
   eventType     String    // DISBURSEMENT_CONFIRMED, APPLICATION_APPROVED, REPAYMENT_CONFIRMED
   payloadJson   String

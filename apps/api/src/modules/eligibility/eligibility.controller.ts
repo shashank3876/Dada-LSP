@@ -12,16 +12,22 @@ export class EligibilityController {
   constructor(private readonly service: EligibilityService) {}
 
   @Get('ewa')
-  @ApiOperation({ summary: 'Check live EWA eligibility for current employee' })
+  @ApiOperation({ summary: 'Check live EWA eligibility for current employee (Tenant Scoped)' })
   checkEwa(@CurrentUser() user: any, @Query('employeeId') employeeId?: string) {
-    const targetEmpId = employeeId || user.employeeId;
+    let targetEmpId = user.employeeId;
+    if (user.role.startsWith('HR_') || user.role.startsWith('DADA_')) {
+      targetEmpId = employeeId || user.employeeId;
+    }
     return this.service.checkEwaEligibility(targetEmpId);
   }
 
   @Get('payroll-loan')
-  @ApiOperation({ summary: 'Check live Payroll loan eligibility for current employee' })
+  @ApiOperation({ summary: 'Check live Payroll loan eligibility for current employee (Tenant Scoped)' })
   checkPayrollLoan(@CurrentUser() user: any, @Query('employeeId') employeeId?: string) {
-    const targetEmpId = employeeId || user.employeeId;
+    let targetEmpId = user.employeeId;
+    if (user.role.startsWith('HR_') || user.role.startsWith('DADA_')) {
+      targetEmpId = employeeId || user.employeeId;
+    }
     return this.service.checkPayrollLoanEligibility(targetEmpId);
   }
 }

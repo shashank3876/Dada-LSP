@@ -20,21 +20,35 @@ export class PayrollController {
   }
 
   @Get('batches/:id')
-  @ApiOperation({ summary: 'Get details of specific batch with items' })
-  getBatchById(@Param('id') id: string) {
-    return this.service.getBatchById(id);
+  @ApiOperation({ summary: 'Get details of specific batch with items (Tenant Scoped)' })
+  getBatchById(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.service.getBatchById(id, user);
   }
 
   @Post('batches/generate')
-  @ApiOperation({ summary: 'Generate new payroll deduction batch at cutoff' })
+  @ApiOperation({ summary: 'Generate new payroll deduction batch at cutoff (Tenant Scoped)' })
   generateBatch(@CurrentUser() user: any, @Body() body: { month?: number; year?: number; organizationId?: string }) {
-    const orgId = body.organizationId || user.organizationId;
-    return this.service.generateBatch(orgId, body.month || 11, body.year || 2026);
+    // Multi-tenant check: HR cannot generate for other organizations
+    const orgId = user.role.startsWith('HR_') ? user.organizationId : (body.organizationId || user.organizationId);
+    return this.service.generateBatch(orgId, body.month || 11, body.year || 2026, user);
   }
 
   @Get('batches/:id/export')
-  @ApiOperation({ summary: 'Export batch deduction ledger to CSV' })
-  exportBatchCsv(@Param('id') id: string) {
-    return this.service.exportBatchCsv(id);
+  @ApiOperation({ summary: 'Export batch deduction ledger to CSV (Tenant Scoped)' })
+  exportBatchCsv(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.service.getBatchById(id, user).then((batch) => {
+      const headers = 'Employee Code,Employee Name,Department,Product Type,Loan Account No,Due Amount (INR)\n';
+      const rows = batch.items
+        .map(
+          (item) =>
+            `"${item.employee.employeeCode}","${item.employee.firstName} ${item.employee.lastName}","${item.employee.department}","${item.productType}","${item.loan.loanAccountNumber}",${item.dueAmountPaise / 100}`,
+        )
+        .join('\n');
+
+      return {
+        fileName: `Deductions_${batch.batchNumber}.csv`,
+        csvData: headers + rows,
+      };
+    });
   }
 }
