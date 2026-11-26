@@ -9,11 +9,14 @@ export const metadata: Metadata = {
     'Dada Advisory Services LLP is an enterprise Digital Loan Service Provider (LSP) partnering with RBI-regulated NBFCs to provide corporate employees with ethical personal loans and Earned Wage Access.',
   icons: {
     icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.png', type: 'image/png', sizes: '192x192' },
       { url: '/icon.svg', type: 'image/svg+xml' },
-      { url: '/favicon.ico', sizes: '32x32' },
     ],
     shortcut: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
   },
 };
 
