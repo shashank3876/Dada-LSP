@@ -11,6 +11,7 @@ import * as crypto from 'crypto';
 import { PrismaService } from '../../common/prisma.service';
 import { InMemoryRateLimiter, DistributedRateLimiter } from '../../common/rate-limiter';
 import { LoginDto, OtpVerifyDto, ForgotPasswordDto, ResetPasswordDto, RegisterEmployeeDto, InitiateEmployeeRegistrationDto } from './dto/login.dto';
+import { NotificationsService } from '../notifications/notifications.service';
 
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
@@ -21,6 +22,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private notificationsService: NotificationsService,
   ) {}
 
   async login(loginDto: LoginDto, clientIp = '127.0.0.1') {
@@ -302,15 +304,39 @@ export class AuthService {
     { otp: string; expiresAt: number; attempts: number; lastSentAt: number }
   >();
 
+  private maskEmail(email: string): string {
+    const [user, domain] = email.split('@');
+    if (!user || !domain) return email;
+    if (user.length <= 2) return `${user[0]}*@${domain}`;
+    const start = user[0];
+    const end = user[user.length - 1];
+    return `${start}***${end}@${domain}`;
+  }
+
+  private maskPhone(phone?: string | null): string | undefined {
+    if (!phone) return undefined;
+    const clean = phone.replace(/[^0-9+]/g, '');
+    if (clean.length < 8) return clean;
+    const visibleStart = clean.startsWith('+') ? clean.slice(0, 5) : clean.slice(0, 4);
+    const visibleEnd = clean.slice(-2);
+    return `${visibleStart}****${visibleEnd}`;
+  }
+
   async initiateEmployeeRegistration(dto: InitiateEmployeeRegistrationDto) {
     const isProductionOrStaging =
       process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging';
 
-    const genericSuccessResponse = {
+    const genericSuccessResponse: {
+      success: boolean;
+      message: string;
+      maskedEmail?: string;
+      maskedPhone?: string;
+      demoOtpHint?: string;
+    } = {
       success: true,
       message:
-        'If your corporate employee details match our records, a one-time verification code has been dispatched to your official corporate email address.',
-      demoOtpHint: isProductionOrStaging ? undefined : '123456',
+        'If your corporate employee details match our records, a one-time verification code has been dispatched to your official corporate email address and registered mobile number.',
+      demoOtpHint: '123456',
     };
 
     const org = await this.prisma.organization.findFirst({
@@ -364,11 +390,15 @@ export class AuthService {
 
     // Resend throttling: require at least 60 seconds between OTP dispatches
     if (existingOtp && Date.now() - existingOtp.lastSentAt < 60 * 1000) {
-      return genericSuccessResponse;
+      const waitRemaining = Math.ceil((60 * 1000 - (Date.now() - existingOtp.lastSentAt)) / 1000);
+      return {
+        ...genericSuccessResponse,
+        message: `OTP was recently sent. Please wait ${waitRemaining}s before requesting a new code.`,
+      };
     }
 
-    // Generate Registration OTP: dispatched exclusively to official employee corporate email
-    const registrationOtp = '123456';
+    // Generate 6-digit Registration OTP (e.g., 629184)
+    const registrationOtp = Math.floor(100000 + Math.random() * 900000).toString();
     AuthService.pendingRegistrationOtps.set(otpKey, {
       otp: registrationOtp,
       expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
@@ -376,7 +406,26 @@ export class AuthService {
       lastSentAt: Date.now(),
     });
 
-    return genericSuccessResponse;
+    // Dual-channel dispatch: Phone (SMS via MSG91) + Official Email (Resend)
+    await this.notificationsService.sendDualOtp({
+      mobile: employee.mobileNumber || undefined,
+      email: employee.officialEmail,
+      otp: registrationOtp,
+      organizationName: org.name,
+      recipientName: `${employee.firstName} ${employee.lastName}`,
+      purpose: 'Corporate Portal Registration',
+    });
+
+    const maskedEmail = this.maskEmail(employee.officialEmail);
+    const maskedPhone = this.maskPhone(employee.mobileNumber);
+
+    return {
+      success: true,
+      message: `A 6-digit verification code has been dispatched to ${maskedEmail}${maskedPhone ? ` and ${maskedPhone}` : ''}.`,
+      maskedEmail,
+      maskedPhone,
+      demoOtpHint: '123456',
+    };
   }
 
   async registerEmployee(dto: RegisterEmployeeDto) {

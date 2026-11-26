@@ -10,6 +10,7 @@ describe('AuthService - Hardening, Lockout & Password Reset', () => {
   let service: AuthService;
   let mockPrisma: any;
   let mockJwt: any;
+  let mockNotifications: any;
   let hashedPassword: string;
 
   beforeAll(async () => {
@@ -23,6 +24,13 @@ describe('AuthService - Hardening, Lockout & Password Reset', () => {
         findUnique: jest.fn(),
         findFirst: jest.fn(),
         update: jest.fn(),
+        create: jest.fn(),
+      },
+      organization: {
+        findFirst: jest.fn(),
+      },
+      employee: {
+        findFirst: jest.fn(),
       },
     };
 
@@ -30,7 +38,18 @@ describe('AuthService - Hardening, Lockout & Password Reset', () => {
       sign: jest.fn().mockReturnValue('mock_jwt_token_xyz'),
     };
 
-    service = new AuthService(mockPrisma as PrismaService, mockJwt as JwtService);
+    mockNotifications = {
+      sendDualOtp: jest.fn().mockResolvedValue({
+        smsResult: { success: true },
+        emailResult: { success: true },
+      }),
+    };
+
+    service = new AuthService(
+      mockPrisma as PrismaService,
+      mockJwt as JwtService,
+      mockNotifications as any,
+    );
   });
 
   it('successful login resets failed login attempts and updates lastLoginAt', async () => {
@@ -249,5 +268,45 @@ describe('AuthService - Hardening, Lockout & Password Reset', () => {
     } finally {
       process.env.NODE_ENV = originalEnv;
     }
+  });
+
+  describe('initiateEmployeeRegistration - Dual OTP Dispatch', () => {
+    it('dispatches dual OTP and returns masked phone and email', async () => {
+      mockPrisma.organization.findFirst.mockResolvedValue({
+        id: 'org-techcorp',
+        code: 'TECHCORP',
+        name: 'TechCorp Solutions',
+      });
+      mockPrisma.employee.findFirst.mockResolvedValue({
+        id: 'emp-1002',
+        employeeCode: 'TC-1002',
+        firstName: 'Priya',
+        lastName: 'Sharma',
+        officialEmail: 'priya.s@techcorp.in',
+        mobileNumber: '+919820011002',
+        organizationId: 'org-techcorp',
+      });
+      mockPrisma.user.findFirst.mockResolvedValue(null);
+
+      const res = await service.initiateEmployeeRegistration({
+        organizationCode: 'TECHCORP',
+        employeeCode: 'TC-1002',
+        officialEmail: 'priya.s@techcorp.in',
+      });
+
+      expect(res.success).toBe(true);
+      expect(mockNotifications.sendDualOtp).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mobile: '+919820011002',
+          email: 'priya.s@techcorp.in',
+          organizationName: 'TechCorp Solutions',
+          recipientName: 'Priya Sharma',
+        }),
+      );
+      expect(res.maskedEmail).toMatch(/^p\*\*\*s@techcorp\.in$/);
+      expect(res.maskedPhone).toMatch(/^\+9198\*\*\*\*02$/);
+      expect(res.message).toContain(res.maskedEmail!);
+      expect(res.demoOtpHint).toBe('123456');
+    });
   });
 });

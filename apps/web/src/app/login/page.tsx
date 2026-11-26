@@ -20,6 +20,17 @@ export default function LoginPage() {
   const [regEmail, setRegEmail] = useState('priya.s@techcorp.in');
   const [regOtp, setRegOtp] = useState('');
   const [regPassword, setRegPassword] = useState('DadaDemo@2026');
+  const [maskedPhone, setMaskedPhone] = useState<string | null>(null);
+  const [maskedEmail, setMaskedEmail] = useState<string | null>(null);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  React.useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setInterval(() => {
+      setResendCooldown((prev) => Math.max(0, prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -107,8 +118,8 @@ export default function LoginPage() {
     }
   };
 
-  const handleInitiateRegistration = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleInitiateRegistration = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setLoading(true);
     setError(null);
     setSuccessMsg(null);
@@ -123,6 +134,9 @@ export default function LoginPage() {
         }),
       });
       setRegStep('VERIFY_OTP');
+      if (res.maskedPhone) setMaskedPhone(res.maskedPhone);
+      if (res.maskedEmail) setMaskedEmail(res.maskedEmail);
+      setResendCooldown(60);
       setSuccessMsg(res.message);
     } catch (err: any) {
       setError(err.message || 'Verification initiation failed');
@@ -291,9 +305,12 @@ export default function LoginPage() {
         ) : regStep === 'IDENTIFY' ? (
           <form onSubmit={handleInitiateRegistration} className="space-y-3">
             <div className="p-2.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-900 text-xs">
-              <strong>Step 1: Corporate Identity Verification</strong>
-              <div className="text-[11px] text-blue-700 mt-0.5">
-                Enter your employer and employee details to receive a statutory registration OTP.
+              <div className="font-bold flex items-center justify-between">
+                <span>Step 1: Corporate Identity Verification</span>
+                <span className="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full font-semibold">Dual OTP</span>
+              </div>
+              <div className="text-[11px] text-blue-700 mt-1">
+                Enter your employer and employee details. We will dispatch a 6-digit verification code to both your registered corporate email and mobile number.
               </div>
             </div>
 
@@ -350,16 +367,25 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full mt-2 py-2.5 bg-dada-900 hover:bg-dada-800 text-white font-bold rounded-lg text-xs transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              {loading ? <span>Verifying Roster...</span> : <span>Send Corporate OTP</span>}
+              {loading ? <span>Verifying Roster & Sending OTP...</span> : <span>Send Verification Code</span>}
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
         ) : (
           <form onSubmit={handleVerifyRegistration} className="space-y-3">
-            <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs">
-              <strong>Step 2: Enter Verification OTP & Password</strong>
-              <div className="text-[11px] text-emerald-700 mt-0.5">
-                A verification code was dispatched. In this staging environment, enter demo OTP: <strong className="text-emerald-950 font-mono font-bold bg-emerald-200/60 px-1 py-0.5 rounded">123456</strong>
+            <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs space-y-1.5">
+              <div className="font-bold flex items-center justify-between">
+                <span>Step 2: Enter Verification OTP & Password</span>
+                <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-semibold">Dual Delivery</span>
+              </div>
+              <div className="text-[11px] text-emerald-800">
+                Verification code dispatched to:
+                {maskedPhone && <div className="font-semibold text-emerald-900">📱 SMS: {maskedPhone}</div>}
+                {maskedEmail && <div className="font-semibold text-emerald-900">✉️ Email: {maskedEmail}</div>}
+                {!maskedPhone && !maskedEmail && <div className="font-semibold text-emerald-900">Your registered mobile & email</div>}
+              </div>
+              <div className="pt-1.5 text-[11px] text-emerald-700 border-t border-emerald-200/60">
+                Staging fallback: You can also use demo code <strong className="text-emerald-950 font-mono font-bold bg-emerald-200/70 px-1 py-0.5 rounded">123456</strong>.
               </div>
             </div>
 
@@ -373,7 +399,7 @@ export default function LoginPage() {
                 maxLength={6}
                 value={regOtp}
                 onChange={(e) => setRegOtp(e.target.value)}
-                placeholder="Enter 123456"
+                placeholder="Enter 6-digit code or 123456"
                 className="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs font-mono text-center tracking-widest font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
@@ -405,13 +431,21 @@ export default function LoginPage() {
               <ArrowRight className="w-4 h-4" />
             </button>
 
-            <div className="text-center pt-1">
+            <div className="flex items-center justify-between pt-1">
               <button
                 type="button"
                 onClick={() => setRegStep('IDENTIFY')}
                 className="text-[11px] text-slate-500 hover:text-slate-700 font-semibold"
               >
-                ← Change details / Re-send OTP
+                ← Change details
+              </button>
+              <button
+                type="button"
+                disabled={resendCooldown > 0 || loading}
+                onClick={() => handleInitiateRegistration()}
+                className="text-[11px] text-emerald-700 hover:text-emerald-800 font-bold disabled:text-slate-400 disabled:cursor-not-allowed"
+              >
+                {resendCooldown > 0 ? `Resend code (${resendCooldown}s)` : 'Resend OTP'}
               </button>
             </div>
           </form>

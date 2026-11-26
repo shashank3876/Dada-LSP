@@ -91,7 +91,18 @@ describe('Checkpoint 3 - Real User Journeys, Hardened State Machine & Compliance
       sign: jest.fn().mockReturnValue('mock_jwt_token_checkpoint3'),
     };
 
-    authService = new AuthService(mockPrisma as PrismaService, mockJwt as JwtService);
+    const mockNotifications = {
+      sendDualOtp: jest.fn().mockResolvedValue({
+        smsResult: { success: true },
+        emailResult: { success: true },
+      }),
+    };
+
+    authService = new AuthService(
+      mockPrisma as PrismaService,
+      mockJwt as JwtService,
+      mockNotifications as any,
+    );
     employeesService = new EmployeesService(mockPrisma as PrismaService);
     loanAppsService = new LoanApplicationsService(mockPrisma as PrismaService);
     hrmsService = new HrmsService(mockPrisma as PrismaService);

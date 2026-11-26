@@ -18,6 +18,7 @@ import { ReconciliationModule } from './modules/reconciliation/reconciliation.mo
 import { ReportsModule } from './modules/reports/reports.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { HrmsModule } from './modules/hrms/hrms.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { HrmsModule } from './modules/hrms/hrms.module';
     ReportsModule,
     AuditModule,
     HrmsModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [PrismaService],
