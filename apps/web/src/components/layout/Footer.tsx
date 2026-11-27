@@ -1,14 +1,28 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Shield, Building2, AlertCircle, Mail, Phone, ExternalLink } from 'lucide-react';
+import {
+  Shield,
+  Building2,
+  AlertCircle,
+  Mail,
+  Phone,
+  ExternalLink,
+  Linkedin,
+  Youtube,
+  Instagram,
+  Facebook,
+  Clock,
+} from 'lucide-react';
+import { SITE_CONFIG } from '@/lib/constants';
+import { WhatsAppIcon } from '@/components/common/WhatsAppIcon';
 
 export default function Footer() {
   return (
     <footer className="bg-slate-950 text-slate-300 pt-16 pb-12 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-slate-800">
-          {/* Company info */}
+          {/* Company info & Social Links */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div className="relative w-10 h-10 rounded-full overflow-hidden border border-amber-500/80 bg-amber-50 flex items-center justify-center shrink-0">
@@ -26,11 +40,79 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Dada Advisory Services LLP is an enterprise Digital Loan Service Provider (LSP) operating in strict compliance with the Reserve Bank of India (RBI) Digital Lending Guidelines. We partner with regulated NBFCs to facilitate direct, ethical salary advances and personal loans to corporate employees.
+              Dada Advisory Services LLP is an enterprise Digital Loan Service Provider (LSP) operating in strict compliance with Reserve Bank of India (RBI) Digital Lending Guidelines. We partner with regulated NBFCs to facilitate direct, ethical salary advances and personal loans to corporate employees.
             </p>
             <div className="flex items-center gap-2 text-xs text-emerald-400 font-semibold">
               <Shield className="w-4 h-4 shrink-0" />
               <span>RBI DLG Compliant • Zero Fund Custody</span>
+            </div>
+
+            {/* Social Media Channels */}
+            <div className="pt-2 space-y-2">
+              <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+                Connect With Us
+              </span>
+              <div className="flex items-center gap-2.5">
+                {/* LinkedIn */}
+                <a
+                  href={SITE_CONFIG.social.linkedin.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Follow Dada Advisory on LinkedIn"
+                  title="LinkedIn"
+                  className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 hover:border-[#0A66C2] hover:bg-[#0A66C2] text-slate-400 hover:text-white flex items-center justify-center transition-all duration-200"
+                >
+                  <Linkedin className="w-4 h-4" />
+                </a>
+
+                {/* YouTube */}
+                <a
+                  href={SITE_CONFIG.social.youtube.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Subscribe to Dada Advisory on YouTube"
+                  title="YouTube"
+                  className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 hover:border-[#FF0000] hover:bg-[#FF0000] text-slate-400 hover:text-white flex items-center justify-center transition-all duration-200"
+                >
+                  <Youtube className="w-4 h-4" />
+                </a>
+
+                {/* Instagram */}
+                <a
+                  href={SITE_CONFIG.social.instagram.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Follow Dada Advisory on Instagram"
+                  title="Instagram"
+                  className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 hover:border-pink-500 hover:bg-gradient-to-tr hover:from-amber-500 hover:via-rose-500 hover:to-purple-600 text-slate-400 hover:text-white flex items-center justify-center transition-all duration-200"
+                >
+                  <Instagram className="w-4 h-4" />
+                </a>
+
+                {/* Facebook */}
+                <a
+                  href={SITE_CONFIG.social.facebook.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Connect with Dada Advisory on Facebook"
+                  title="Facebook"
+                  className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 hover:border-[#1877F2] hover:bg-[#1877F2] text-slate-400 hover:text-white flex items-center justify-center transition-all duration-200"
+                >
+                  <Facebook className="w-4 h-4" />
+                </a>
+
+                {/* WhatsApp */}
+                <a
+                  href={SITE_CONFIG.whatsapp.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Chat with Dada Advisory on WhatsApp"
+                  title="WhatsApp"
+                  className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 hover:border-[#25D366] hover:bg-[#25D366] text-slate-400 hover:text-white flex items-center justify-center transition-all duration-200"
+                >
+                  <WhatsAppIcon className="w-4 h-4" />
+                </a>
+              </div>
             </div>
           </div>
 
@@ -105,32 +187,63 @@ export default function Footer() {
           {/* Direct Support & Partnerships Contacts */}
           <div>
             <h4 className="text-white text-xs font-bold uppercase tracking-wider mb-4 border-l-2 border-amber-500 pl-2">
-              Contact & Grievance
+              Contact & Helpline
             </h4>
             <ul className="space-y-3 text-xs text-slate-400">
+              {/* Phone Line */}
               <li className="space-y-1">
-                <span className="text-[11px] font-semibold text-slate-300 block">Email Support & Inquiries:</span>
+                <span className="text-[11px] font-semibold text-slate-300 block">Customer Helpline:</span>
                 <a
-                  href="mailto:support@dadaadvisoryservices.com"
-                  className="text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 font-medium break-all"
+                  href={`tel:${SITE_CONFIG.phone.tel}`}
+                  className="text-amber-400 hover:text-amber-300 flex items-center gap-1.5 font-medium"
                 >
-                  <Mail className="w-3.5 h-3.5 shrink-0" />
-                  <span>support@dadaadvisoryservices.com</span>
+                  <Phone className="w-3.5 h-3.5 shrink-0" />
+                  <span>{SITE_CONFIG.phone.display}</span>
+                </a>
+                <span className="text-[10px] text-slate-500 block">Toll-Free: {SITE_CONFIG.phone.tollFree}</span>
+              </li>
+
+              {/* WhatsApp Support */}
+              <li className="space-y-1">
+                <span className="text-[11px] font-semibold text-slate-300 block">WhatsApp Desk:</span>
+                <a
+                  href={SITE_CONFIG.whatsapp.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 font-medium"
+                >
+                  <WhatsAppIcon className="w-3.5 h-3.5 shrink-0" />
+                  <span>{SITE_CONFIG.whatsapp.display} (Chat Online)</span>
                 </a>
               </li>
+
+              {/* Email Support */}
+              <li className="space-y-1">
+                <span className="text-[11px] font-semibold text-slate-300 block">Email Support:</span>
+                <a
+                  href={`mailto:${SITE_CONFIG.supportEmail}`}
+                  className="text-slate-300 hover:text-emerald-300 flex items-center gap-1.5 font-medium break-all"
+                >
+                  <Mail className="w-3.5 h-3.5 shrink-0 text-emerald-400" />
+                  <span>{SITE_CONFIG.supportEmail}</span>
+                </a>
+              </li>
+
+              {/* Corporate Partnerships */}
               <li className="space-y-1">
                 <span className="text-[11px] font-semibold text-slate-300 block">Corporate Partnerships:</span>
                 <a
-                  href="mailto:connect@dadaadvisoryservices.com"
-                  className="text-amber-400 hover:text-amber-300 flex items-center gap-1.5 font-medium break-all"
+                  href={`mailto:${SITE_CONFIG.partnershipsEmail}`}
+                  className="text-slate-300 hover:text-amber-300 flex items-center gap-1.5 font-medium break-all"
                 >
-                  <Building2 className="w-3.5 h-3.5 shrink-0" />
-                  <span>connect@dadaadvisoryservices.com</span>
+                  <Building2 className="w-3.5 h-3.5 shrink-0 text-amber-400" />
+                  <span>{SITE_CONFIG.partnershipsEmail}</span>
                 </a>
               </li>
-              <li className="pt-1 text-[11px] text-slate-500">
-                Grievance Officer: Mr. Rajeshwar Rao<br />
-                Turnaround Time (TAT): 24–48 Business Hours
+
+              <li className="pt-1 text-[11px] text-slate-500 flex items-center gap-1">
+                <Clock className="w-3 h-3 shrink-0" />
+                <span>Hours: {SITE_CONFIG.phone.hours}</span>
               </li>
             </ul>
           </div>

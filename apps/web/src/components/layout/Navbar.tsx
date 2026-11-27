@@ -4,7 +4,9 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { ShieldCheck, Lock, Mail, Users, Building2, PhoneCall } from 'lucide-react';
+import { ShieldCheck, Lock, Mail, Users, Building2, PhoneCall, Phone } from 'lucide-react';
+import { SITE_CONFIG } from '@/lib/constants';
+import { WhatsAppIcon } from '@/components/common/WhatsAppIcon';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -31,21 +33,33 @@ export default function Navbar() {
             <span className="hidden md:inline text-slate-500">•</span>
             <span className="hidden md:inline text-slate-400">Partner NBFCs: Apex Capital Finance Ltd | DMI Finance</span>
           </div>
-          <div className="flex items-center gap-4 text-slate-300">
+          <div className="flex items-center gap-3 sm:gap-4 text-slate-300">
             <a
-              href="mailto:support@dadaadvisoryservices.com"
-              className="flex items-center gap-1 hover:text-emerald-400 transition-colors"
+              href={`tel:${SITE_CONFIG.phone.tel}`}
+              className="flex items-center gap-1 hover:text-amber-400 transition-colors"
+              title={`Call Support: ${SITE_CONFIG.phone.display}`}
             >
-              <Mail className="w-3 h-3 text-emerald-400" />
-              <span>support@dadaadvisoryservices.com</span>
+              <Phone className="w-3 h-3 text-amber-400" />
+              <span>{SITE_CONFIG.phone.display}</span>
             </a>
             <span className="text-slate-600 hidden sm:inline">|</span>
             <a
-              href="mailto:connect@dadaadvisoryservices.com"
-              className="hidden sm:flex items-center gap-1 hover:text-amber-400 transition-colors"
+              href={SITE_CONFIG.whatsapp.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-emerald-400 hover:text-emerald-300 transition-colors font-semibold"
+              title="Chat on WhatsApp"
             >
-              <Building2 className="w-3 h-3 text-amber-400" />
-              <span>connect@dadaadvisoryservices.com</span>
+              <WhatsAppIcon className="w-3 h-3" />
+              <span>WhatsApp</span>
+            </a>
+            <span className="text-slate-600 hidden md:inline">|</span>
+            <a
+              href={`mailto:${SITE_CONFIG.supportEmail}`}
+              className="hidden md:flex items-center gap-1 hover:text-emerald-400 transition-colors"
+            >
+              <Mail className="w-3 h-3 text-emerald-400" />
+              <span>{SITE_CONFIG.supportEmail}</span>
             </a>
           </div>
         </div>

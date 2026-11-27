@@ -126,7 +126,14 @@ export class NotificationsService {
 
     if (this.resendApiKey) {
       try {
-        this.logger.log(`Dispatching live Email OTP via Resend to ${email}...`);
+        // Resend Sandbox Routing:
+        // Free onboarding@resend.dev domain only delivers to the account owner email (shashank3876gusain@gmail.com).
+        // Route sandbox test emails directly to this address so all 5 demo employee accounts receive real live OTP emails.
+        const sandboxOwnerEmail = 'shashank3876gusain@gmail.com';
+        const isSandbox = this.emailFrom.includes('resend.dev');
+        const targetEmail = isSandbox ? sandboxOwnerEmail : email;
+
+        this.logger.log(`Dispatching live Email OTP via Resend to ${targetEmail} (intended for: ${email})...`);
 
         const htmlBody = `
           <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background-color: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0;">
@@ -135,7 +142,7 @@ export class NotificationsService {
               <p style="color: #64748b; font-size: 13px; margin: 0;">Lending Service Provider for ${orgName}</p>
             </div>
             <div style="background-color: #ffffff; padding: 28px 24px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;">
-              <p style="color: #334155; font-size: 14px; margin-top: 0; line-height: 1.5;">Hello <strong>${recipientName}</strong>,</p>
+              <p style="color: #334155; font-size: 14px; margin-top: 0; line-height: 1.5;">Hello <strong>${recipientName}</strong> (${email}),</p>
               <p style="color: #334155; font-size: 14px; line-height: 1.5;">Use the following one-time verification code (OTP) to complete your <strong>${purpose}</strong>:</p>
               <div style="text-align: center; margin: 28px 0;">
                 <span style="font-family: 'SF Mono', Consolas, Monaco, monospace; font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #059669; background-color: #ecfdf5; padding: 12px 28px; border-radius: 8px; border: 1px solid #a7f3d0; display: inline-block;">${otp}</span>
@@ -148,6 +155,11 @@ export class NotificationsService {
           </div>
         `;
 
+        const subject =
+          isSandbox && email !== sandboxOwnerEmail
+            ? `[${otp}] Your Dada Advisory Verification Code for ${recipientName} (${email})`
+            : `[${otp}] Your Dada Advisory Verification Code`;
+
         const response = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
@@ -156,8 +168,8 @@ export class NotificationsService {
           },
           body: JSON.stringify({
             from: this.emailFrom,
-            to: [email],
-            subject: `[${otp}] Your Dada Advisory Verification Code`,
+            to: [targetEmail],
+            subject,
             html: htmlBody,
           }),
         });

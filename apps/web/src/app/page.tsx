@@ -164,55 +164,73 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-          <table className="w-full text-left text-sm">
+        <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto shadow-sm">
+          <table className="w-full text-left text-xs sm:text-sm border-collapse min-w-[700px]">
             <thead className="bg-slate-900 text-white border-b border-slate-800">
               <tr>
-                <th className="py-4 px-6 font-bold w-1/3">Parameters</th>
-                <th className="py-4 px-6 font-bold text-amber-400 w-1/3">Corporate Personal Loan</th>
-                <th className="py-4 px-6 font-bold text-emerald-400 w-1/3">Earned Wage Access (EWA)</th>
+                <th className="py-4 px-6 font-bold w-1/4">Parameters</th>
+                <th className="py-4 px-6 font-bold text-emerald-400 w-1/4">
+                  <div className="text-[10px] text-slate-400 font-semibold uppercase">Product A</div>
+                  <div>Instant EWA</div>
+                </th>
+                <th className="py-4 px-6 font-bold text-amber-400 w-1/4">
+                  <div className="text-[10px] text-slate-400 font-semibold uppercase">Product B</div>
+                  <div>Salary Advance Loan</div>
+                </th>
+                <th className="py-4 px-6 font-bold text-blue-400 w-1/4">
+                  <div className="text-[10px] text-slate-400 font-semibold uppercase">Product C</div>
+                  <div>Instant Personal Loan</div>
+                </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-700 text-xs sm:text-sm">
+            <tbody className="divide-y divide-slate-100 text-slate-700 text-xs">
               <tr>
-                <td className="py-3.5 px-6 font-bold text-slate-900">Loan / Credit Amount</td>
-                <td className="py-3.5 px-6 font-semibold text-slate-900">₹25,000 to ₹5,00,000 (up to 3x Net Salary)</td>
-                <td className="py-3.5 px-6 font-semibold text-slate-900">Up to 50% of earned wages (₹1,000 to ₹50,000)</td>
+                <td className="py-3 px-6 font-bold text-slate-900">Loan Ticket Size</td>
+                <td className="py-3 px-6 font-extrabold text-slate-900">₹5,000 – ₹50,000</td>
+                <td className="py-3 px-6 font-extrabold text-slate-900">₹20,000 – ₹1,00,000</td>
+                <td className="py-3 px-6 font-extrabold text-slate-900">₹50,000 – ₹2,00,000</td>
               </tr>
               <tr>
-                <td className="py-3.5 px-6 font-bold text-slate-900">Interest Rate (Annualized)</td>
-                <td className="py-3.5 px-6 font-bold text-amber-700">11.5% to 24% p.a. (Reducing Balance)</td>
-                <td className="py-3.5 px-6 font-bold text-emerald-700">0% Interest (Zero debt facility)</td>
+                <td className="py-3 px-6 font-bold text-slate-900">Loan Capping</td>
+                <td className="py-3 px-6 font-medium">50%–70% of accrued net salary</td>
+                <td className="py-3 px-6 font-medium">Up to 2x monthly net salary</td>
+                <td className="py-3 px-6 font-medium">Up to 3x monthly net salary</td>
               </tr>
               <tr>
-                <td className="py-3.5 px-6 font-bold text-slate-900">Repayment Tenure</td>
-                <td className="py-3.5 px-6">6, 12, 18, 24, to 36 Monthly EMIs</td>
-                <td className="py-3.5 px-6">Next Salary Cycle (Automated bullet deduction)</td>
+                <td className="py-3 px-6 font-bold text-slate-900">Tenure & Repayment</td>
+                <td className="py-3 px-6">Up to 30 Days (Bullet recovery)</td>
+                <td className="py-3 px-6">Up to 3 Months (EMIs)</td>
+                <td className="py-3 px-6">3 to 10 Months (EMIs)</td>
               </tr>
               <tr>
-                <td className="py-3.5 px-6 font-bold text-slate-900">Processing Fee</td>
-                <td className="py-3.5 px-6">1.5% to 2% + GST (disclosed upfront in KFS)</td>
-                <td className="py-3.5 px-6">Flat nominal platform fee (₹99 per withdrawal)</td>
+                <td className="py-3 px-6 font-bold text-slate-900">Pricing / Interest</td>
+                <td className="py-3 px-6 font-bold text-emerald-700">26% p.a.</td>
+                <td className="py-3 px-6 font-bold text-amber-700">28% p.a. (reducing)</td>
+                <td className="py-3 px-6 font-bold text-blue-700">24% – 30% p.a. (reducing)</td>
               </tr>
               <tr>
-                <td className="py-3.5 px-6 font-bold text-slate-900">Collateral / Security</td>
-                <td className="py-3.5 px-6">Nil (100% Unsecured)</td>
-                <td className="py-3.5 px-6">Nil (Based on verified work attendance)</td>
+                <td className="py-3 px-6 font-bold text-slate-900">Processing Fee (PF)</td>
+                <td className="py-3 px-6">Flat 3% upfront</td>
+                <td className="py-3 px-6">Flat 4% upfront</td>
+                <td className="py-3 px-6">Flat 4% upfront</td>
               </tr>
               <tr>
-                <td className="py-3.5 px-6 font-bold text-slate-900">Pre-closure / Foreclosure</td>
-                <td className="py-3.5 px-6 text-emerald-700 font-semibold">Zero charges after 6 completed EMIs</td>
-                <td className="py-3.5 px-6">Not applicable (one-cycle settlement)</td>
+                <td className="py-3 px-6 font-bold text-slate-900">Disbursal Speed</td>
+                <td className="py-3 px-6 font-bold text-emerald-700">Under 10 Minutes (24x7)</td>
+                <td className="py-3 px-6 font-bold text-amber-700">Under 30 Minutes</td>
+                <td className="py-3 px-6 font-bold text-blue-700">Under 2 Hours</td>
               </tr>
               <tr>
-                <td className="py-3.5 px-6 font-bold text-slate-900">Credit Bureau Reporting</td>
-                <td className="py-3.5 px-6">Reported to CIBIL/Experian (builds credit score)</td>
-                <td className="py-3.5 px-6">Not reported as loan (zero debt impact)</td>
+                <td className="py-3 px-6 font-bold text-slate-900">Repayment Mode</td>
+                <td className="py-3 px-6">Payroll deduction / e-NACH</td>
+                <td className="py-3 px-6">e-NACH / UPI AutoPay</td>
+                <td className="py-3 px-6">e-NACH / UPI AutoPay</td>
               </tr>
               <tr>
-                <td className="py-3.5 px-6 font-bold text-slate-900">Disbursal Account</td>
-                <td className="py-3.5 px-6">Direct credit from NBFC into verified salary account</td>
-                <td className="py-3.5 px-6">Direct credit from NBFC into verified salary account</td>
+                <td className="py-3 px-6 font-bold text-slate-900">Target Segment</td>
+                <td className="py-3 px-6">Corporate salaried employees</td>
+                <td className="py-3 px-6">Salaried employees (tie-up/direct)</td>
+                <td className="py-3 px-6">Salaried & self-employed</td>
               </tr>
             </tbody>
           </table>

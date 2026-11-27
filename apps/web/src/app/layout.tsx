@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import FloatingWhatsApp from '@/components/common/FloatingWhatsApp';
 
 export const metadata: Metadata = {
   title: 'Dada Advisory Services LLP | Digital Loan Service Provider (LSP)',
@@ -31,6 +32,7 @@ export default function RootLayout({
         <Navbar />
         <main className="flex-grow">{children}</main>
         <Footer />
+        <FloatingWhatsApp />
       </body>
     </html>
   );
