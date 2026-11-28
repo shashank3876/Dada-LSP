@@ -7,8 +7,8 @@ import { ShieldCheck, Mail, Building2, HelpCircle, ArrowRight } from 'lucide-rea
 export default function FaqPage() {
   const faqs = [
     {
-      q: 'What is Dada Advisory Services LLP, and is it an authorized lender?',
-      a: 'Dada Advisory Services LLP operates strictly as a Lending Service Provider (LSP) under the regulatory framework of the Reserve Bank of India (RBI Digital Lending Guidelines, 2022). Dada Advisory does not lend from its own balance sheet, does not hold or pool borrower funds. All credit facilities, interest rate evaluations, and disbursements are executed directly by RBI-registered partner Non-Banking Financial Companies (NBFCs) like Apex Capital Finance Ltd and DMI Finance Private Ltd directly into the employee’s salary bank account.',
+      q: 'What is Dada Bridge, and is it an authorized lender?',
+      a: 'Dada Bridge is the enterprise digital lending platform operated by Dada Advisory Services LLP as a registered Lending Service Provider (LSP) under the regulatory framework of the Reserve Bank of India (RBI Digital Lending Guidelines, 2022). Dada Bridge does not lend from its own balance sheet and does not hold or pool borrower funds. All credit facilities, interest rate evaluations, and disbursements are executed directly by RBI-registered partner Non-Banking Financial Companies (NBFCs) like Apex Capital Finance Ltd and DMI Finance Private Ltd directly into the employee’s salary bank account.',
     },
     {
       q: 'How does Earned Wage Access (EWA) differ from a Corporate Personal Loan?',

@@ -7,16 +7,23 @@ import {
   ShieldCheck,
   Clock,
   AlertCircle,
-  Linkedin,
-  Youtube,
-  Instagram,
-  Facebook,
   ExternalLink,
-  MessageCircle,
 } from 'lucide-react';
 import Image from 'next/image';
 import { SITE_CONFIG } from '@/lib/constants';
-import { WhatsAppIcon } from '@/components/common/WhatsAppIcon';
+import {
+  LinkedInBadge,
+  YouTubeBadge,
+  InstagramBadge,
+  FacebookBadge,
+  WhatsAppBadge,
+} from '@/components/common/SocialIcons';
+
+export const metadata = {
+  title: 'Contact Us | Dada Bridge',
+  description:
+    'Contact Dada Bridge (a unit of Dada Advisory Services LLP). Reach our support desk, hotline, or grievance redressal officer.',
+};
 
 export default function ContactPage() {
   return (
@@ -25,13 +32,13 @@ export default function ContactPage() {
       <div className="max-w-3xl space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold">
           <ShieldCheck className="w-4 h-4 text-amber-600" />
-          <span>Official Channels • Dada Advisory Services LLP</span>
+          <span>Official Channels • Dada Bridge (A Unit of Dada Advisory Services LLP)</span>
         </div>
         <h1 className="text-4xl font-extrabold text-dada-950 tracking-tight">
           Contact, Hotline & Grievance Redressal
         </h1>
         <p className="text-base text-slate-600 leading-relaxed">
-          Reach our dedicated support teams for borrower assistance, corporate employer onboarding, helpline support, or regulatory liaison with partner NBFCs.
+          Reach the dedicated Dada Bridge support teams for borrower assistance, corporate employer onboarding, helpline support, or regulatory liaison with partner NBFCs.
         </p>
       </div>
 
@@ -64,7 +71,7 @@ export default function ContactPage() {
         <div className="bg-white p-7 rounded-2xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between hover:border-emerald-400 transition-all">
           <div className="space-y-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-              <WhatsAppIcon className="w-5 h-5 text-emerald-600" />
+              <WhatsAppBadge className="w-6 h-6" />
             </div>
             <h3 className="font-bold text-base text-dada-950">WhatsApp Desk</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
@@ -96,7 +103,7 @@ export default function ContactPage() {
             </div>
             <h3 className="font-bold text-base text-dada-950">Email Support</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              For borrower application queries, verification, salary deduction, and general support:
+              Official email channel for inquiries, repayments, statements, and account updates:
             </p>
             <div className="p-3 bg-blue-50/70 rounded-xl border border-blue-200 text-xs font-bold text-blue-950 break-all">
               <a href={`mailto:${SITE_CONFIG.supportEmail}`} className="hover:underline">
@@ -106,7 +113,7 @@ export default function ContactPage() {
           </div>
           <div className="text-[11px] text-slate-500 flex items-center gap-1.5 pt-2 border-t border-slate-100">
             <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-            <span>Turnaround Time: Within 24 business hours</span>
+            <span>Resolution TAT: 24 Business Hours</span>
           </div>
         </div>
 
@@ -116,7 +123,7 @@ export default function ContactPage() {
             <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
               <Building2 className="w-5 h-5" />
             </div>
-            <h3 className="font-bold text-base text-dada-950">Corporate Desk</h3>
+            <h3 className="font-bold text-base text-dada-950">Corporate Partnerships</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
               For Enterprise HR Directors, Payroll heads, and prospective NBFC lending partners:
             </p>
@@ -133,7 +140,7 @@ export default function ContactPage() {
         </div>
       </div>
 
-      {/* Official Social Media Channels Section */}
+      {/* Official Social Media Channels Section (Permanent Full-Color Badges) */}
       <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
           <div>
@@ -143,7 +150,7 @@ export default function ContactPage() {
             </p>
           </div>
           <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-            Verified Handles
+            Official Channels
           </span>
         </div>
 
@@ -156,8 +163,8 @@ export default function ContactPage() {
             className="group p-5 rounded-xl border border-slate-200 hover:border-[#0A66C2] hover:bg-slate-50/80 transition-all flex items-center justify-between"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#0A66C2]/10 text-[#0A66C2] flex items-center justify-center group-hover:bg-[#0A66C2] group-hover:text-white transition-all">
-                <Linkedin className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center shrink-0 shadow-xs">
+                <LinkedInBadge className="w-10 h-10" />
               </div>
               <div>
                 <div className="font-bold text-sm text-slate-900 group-hover:text-[#0A66C2] transition-colors">
@@ -177,8 +184,8 @@ export default function ContactPage() {
             className="group p-5 rounded-xl border border-slate-200 hover:border-[#FF0000] hover:bg-slate-50/80 transition-all flex items-center justify-between"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#FF0000]/10 text-[#FF0000] flex items-center justify-center group-hover:bg-[#FF0000] group-hover:text-white transition-all">
-                <Youtube className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center shrink-0 shadow-xs">
+                <YouTubeBadge className="w-10 h-10" />
               </div>
               <div>
                 <div className="font-bold text-sm text-slate-900 group-hover:text-[#FF0000] transition-colors">
@@ -198,8 +205,8 @@ export default function ContactPage() {
             className="group p-5 rounded-xl border border-slate-200 hover:border-pink-500 hover:bg-slate-50/80 transition-all flex items-center justify-between"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center group-hover:bg-gradient-to-tr group-hover:from-amber-500 group-hover:via-rose-500 group-hover:to-purple-600 group-hover:text-white transition-all">
-                <Instagram className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center shrink-0 shadow-xs">
+                <InstagramBadge className="w-10 h-10" />
               </div>
               <div>
                 <div className="font-bold text-sm text-slate-900 group-hover:text-pink-600 transition-colors">
@@ -219,8 +226,8 @@ export default function ContactPage() {
             className="group p-5 rounded-xl border border-slate-200 hover:border-[#1877F2] hover:bg-slate-50/80 transition-all flex items-center justify-between"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#1877F2]/10 text-[#1877F2] flex items-center justify-center group-hover:bg-[#1877F2] group-hover:text-white transition-all">
-                <Facebook className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center shrink-0 shadow-xs">
+                <FacebookBadge className="w-10 h-10" />
               </div>
               <div>
                 <div className="font-bold text-sm text-slate-900 group-hover:text-[#1877F2] transition-colors">
@@ -246,7 +253,7 @@ export default function ContactPage() {
           </div>
         </div>
         <p className="text-xs text-slate-700 leading-relaxed max-w-3xl">
-          <strong>{SITE_CONFIG.address.company}</strong><br />
+          <strong>Dada Bridge</strong> is a digital lending brand of <strong>{SITE_CONFIG.address.company}</strong><br />
           {SITE_CONFIG.address.line1}, {SITE_CONFIG.address.line2}<br />
           LLPIN: <span className="font-mono font-semibold">{SITE_CONFIG.address.llpin}</span> • Digital Lending Ref: <span className="font-mono font-semibold">{SITE_CONFIG.address.regRef}</span>
         </p>

@@ -218,7 +218,7 @@ export default function LoginPage() {
             Portal Authentication
           </h2>
           <p className="text-xs text-slate-500 font-medium">
-            Dada Advisory Services LLP • Regulated Digital Loan Service Provider (LSP)
+            Dada Bridge • A Unit of Dada Advisory Services LLP (LSP)
           </p>
         </div>
 
@@ -487,7 +487,7 @@ export default function LoginPage() {
 
         {/* Support Helpdesk Notice */}
         <div className="pt-3 border-t border-slate-100 text-center text-[11px] text-slate-500 space-y-1">
-          <div>Dada Advisory Services LLP • Digital Loan Service Provider</div>
+          <div>Dada Bridge (Dada Advisory Services LLP) • Digital Loan Service Provider</div>
           <div>
             Need help? Contact Employee Helpdesk:{' '}
             <a

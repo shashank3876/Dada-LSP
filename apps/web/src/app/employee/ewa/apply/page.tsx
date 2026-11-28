@@ -133,7 +133,7 @@ export default function EwaApplyPage() {
             <div className="space-y-1">
               <div className="font-bold">Compliant NBFC Direct Transfer</div>
               <p className="text-[11px] leading-relaxed text-emerald-800">
-                Dada Advisory facilitates initial verification only. The partner NBFC (Apex Capital Finance) sanctions and transfers funds directly to your verified HDFC salary account.
+                Dada Bridge facilitates initial verification only. The partner NBFC (Apex Capital Finance) sanctions and transfers funds directly to your verified HDFC salary account.
               </p>
             </div>
           </div>

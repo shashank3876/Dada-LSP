@@ -40,18 +40,18 @@ export default function HomePage() {
             <div className="lg:col-span-7 space-y-6 text-left">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100/80 border border-amber-300 text-amber-950 text-xs font-bold shadow-sm">
                 <ShieldCheck className="w-4 h-4 text-amber-700" />
-                <span>RBI Regulated Digital Lending (DLG) Compliant Platform</span>
+                <span>Dada Bridge • RBI Regulated Digital Lending (DLG) Platform</span>
               </div>
 
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-dada-950 tracking-tight leading-[1.15]">
-                Corporate Personal Loans & Salary Advance up to{' '}
+                Corporate Personal Loans & Salary Advance on{' '}
                 <span className="text-amber-600 underline decoration-amber-400/60 decoration-wavy">
-                  ₹5,00,000
+                  Dada Bridge
                 </span>
               </h1>
 
               <p className="text-base md:text-lg text-slate-700 leading-relaxed max-w-2xl">
-                Dada Advisory Services LLP is an enterprise Digital Loan Service Provider (LSP). In partnership with RBI-regulated NBFCs, we provide corporate employees with transparent personal loans starting from <strong>11.5% p.a.</strong> and instant on-demand Earned Wage Access.
+                Dada Bridge is an enterprise digital lending platform powered by <strong>Dada Advisory Services LLP</strong> (registered LSP). In partnership with RBI-regulated NBFCs, we provide corporate employees with transparent personal loans starting from <strong>11.5% p.a.</strong> and instant on-demand Earned Wage Access.
               </p>
 
               {/* Quick Feature Chips (Modeled after DMI Finance & L&T Finance) */}
@@ -89,10 +89,10 @@ export default function HomePage() {
                   <ArrowRight className="w-4 h-4 ml-1" />
                 </Link>
                 <Link
-                  href="/products/payroll-loan"
+                  href="/products"
                   className="px-6 py-3.5 bg-white hover:bg-slate-50 text-slate-800 font-bold rounded-xl text-sm transition-all border border-slate-300 shadow-sm"
                 >
-                  <span>Explore Loan Details</span>
+                  <span>Explore Loan Products</span>
                 </Link>
               </div>
             </div>
@@ -103,7 +103,7 @@ export default function HomePage() {
                 <div className="relative w-48 h-48 mx-auto rounded-full overflow-hidden border-4 border-amber-500/90 shadow-xl bg-amber-50/50">
                   <Image
                     src="/logo.png"
-                    alt="Dada Advisory Services LLP Seal"
+                    alt="Dada Bridge Emblem"
                     width={220}
                     height={220}
                     className="object-cover w-full h-full"
@@ -112,13 +112,13 @@ export default function HomePage() {
                 </div>
                 <div>
                   <h3 className="font-extrabold text-xl text-dada-950 tracking-tight">
-                    Dada Advisory Services LLP
+                    Dada Bridge
                   </h3>
                   <p className="text-xs font-bold text-amber-700 tracking-wider uppercase mt-0.5">
-                    Digital Loan Service Provider
+                    Powered by Dada Advisory Services LLP
                   </p>
                   <p className="text-[11px] text-slate-500 mt-2 leading-relaxed">
-                    Facilitating ethical digital credit in partnership with RBI-regulated NBFCs. Disbursed directly from lender escrow to salary account.
+                    Facilitating ethical digital credit in partnership with RBI-regulated NBFCs. Disbursed directly from lender escrow to employee salary account.
                   </p>
                 </div>
                 <div className="pt-3 border-t border-slate-100 flex items-center justify-around text-xs text-slate-600 font-medium">

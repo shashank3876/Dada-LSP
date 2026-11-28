@@ -8,14 +8,16 @@ import {
   Mail,
   Phone,
   ExternalLink,
-  Linkedin,
-  Youtube,
-  Instagram,
-  Facebook,
   Clock,
 } from 'lucide-react';
 import { SITE_CONFIG } from '@/lib/constants';
-import { WhatsAppIcon } from '@/components/common/WhatsAppIcon';
+import {
+  LinkedInBadge,
+  YouTubeBadge,
+  InstagramBadge,
+  FacebookBadge,
+  WhatsAppBadge,
+} from '@/components/common/SocialIcons';
 
 export default function Footer() {
   return (
@@ -28,29 +30,31 @@ export default function Footer() {
               <div className="relative w-10 h-10 rounded-full overflow-hidden border border-amber-500/80 bg-amber-50 flex items-center justify-center shrink-0">
                 <Image
                   src="/logo-square.png"
-                  alt="Dada Advisory Services LLP Logo"
+                  alt="Dada Bridge Logo"
                   width={40}
                   height={40}
                   className="object-cover w-full h-full"
                 />
               </div>
               <div>
-                <span className="font-extrabold text-lg text-white tracking-tight">DADA ADVISORY</span>
-                <span className="block text-[10px] text-amber-400 font-semibold tracking-wider uppercase">SERVICES LLP</span>
+                <span className="font-extrabold text-lg text-white tracking-tight">DADA BRIDGE</span>
+                <span className="block text-[10px] text-amber-400 font-semibold tracking-wider uppercase">
+                  A Unit of Dada Advisory Services LLP
+                </span>
               </div>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Dada Advisory Services LLP is an enterprise Digital Loan Service Provider (LSP) operating in strict compliance with Reserve Bank of India (RBI) Digital Lending Guidelines. We partner with regulated NBFCs to facilitate direct, ethical salary advances and personal loans to corporate employees.
+              Dada Bridge is the enterprise digital workplace lending platform of Dada Advisory Services LLP (registered LSP). In partnership with RBI-regulated NBFCs, Dada Bridge provides corporate employees with on-demand Earned Wage Access and low-interest personal credit.
             </p>
             <div className="flex items-center gap-2 text-xs text-emerald-400 font-semibold">
               <Shield className="w-4 h-4 shrink-0" />
-              <span>RBI DLG Compliant • Zero Fund Custody</span>
+              <span>RBI DLG Compliant • Direct NBFC Escrow</span>
             </div>
 
-            {/* Social Media Channels */}
+            {/* Social Media Channels (Permanent Full-Color Official Badges) */}
             <div className="pt-2 space-y-2">
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
-                Connect With Us
+                Official Social Channels
               </span>
               <div className="flex items-center gap-2.5">
                 {/* LinkedIn */}
@@ -58,11 +62,11 @@ export default function Footer() {
                   href={SITE_CONFIG.social.linkedin.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Follow Dada Advisory on LinkedIn"
+                  aria-label="Follow Dada Bridge on LinkedIn"
                   title="LinkedIn"
-                  className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 hover:border-[#0A66C2] hover:bg-[#0A66C2] text-slate-400 hover:text-white flex items-center justify-center transition-all duration-200"
+                  className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center hover:scale-110 transition-transform shadow-xs"
                 >
-                  <Linkedin className="w-4 h-4" />
+                  <LinkedInBadge className="w-8 h-8" />
                 </a>
 
                 {/* YouTube */}
@@ -70,11 +74,11 @@ export default function Footer() {
                   href={SITE_CONFIG.social.youtube.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Subscribe to Dada Advisory on YouTube"
+                  aria-label="Subscribe to Dada Bridge on YouTube"
                   title="YouTube"
-                  className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 hover:border-[#FF0000] hover:bg-[#FF0000] text-slate-400 hover:text-white flex items-center justify-center transition-all duration-200"
+                  className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center hover:scale-110 transition-transform shadow-xs"
                 >
-                  <Youtube className="w-4 h-4" />
+                  <YouTubeBadge className="w-8 h-8" />
                 </a>
 
                 {/* Instagram */}
@@ -82,11 +86,11 @@ export default function Footer() {
                   href={SITE_CONFIG.social.instagram.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Follow Dada Advisory on Instagram"
+                  aria-label="Follow Dada Bridge on Instagram"
                   title="Instagram"
-                  className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 hover:border-pink-500 hover:bg-gradient-to-tr hover:from-amber-500 hover:via-rose-500 hover:to-purple-600 text-slate-400 hover:text-white flex items-center justify-center transition-all duration-200"
+                  className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center hover:scale-110 transition-transform shadow-xs"
                 >
-                  <Instagram className="w-4 h-4" />
+                  <InstagramBadge className="w-8 h-8" />
                 </a>
 
                 {/* Facebook */}
@@ -94,11 +98,11 @@ export default function Footer() {
                   href={SITE_CONFIG.social.facebook.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Connect with Dada Advisory on Facebook"
+                  aria-label="Connect with Dada Bridge on Facebook"
                   title="Facebook"
-                  className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 hover:border-[#1877F2] hover:bg-[#1877F2] text-slate-400 hover:text-white flex items-center justify-center transition-all duration-200"
+                  className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center hover:scale-110 transition-transform shadow-xs"
                 >
-                  <Facebook className="w-4 h-4" />
+                  <FacebookBadge className="w-8 h-8" />
                 </a>
 
                 {/* WhatsApp */}
@@ -106,35 +110,30 @@ export default function Footer() {
                   href={SITE_CONFIG.whatsapp.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Chat with Dada Advisory on WhatsApp"
-                  title="WhatsApp"
-                  className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 hover:border-[#25D366] hover:bg-[#25D366] text-slate-400 hover:text-white flex items-center justify-center transition-all duration-200"
+                  aria-label="Chat with Dada Bridge on WhatsApp"
+                  title="WhatsApp Support Desk"
+                  className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center hover:scale-110 transition-transform shadow-xs"
                 >
-                  <WhatsAppIcon className="w-4 h-4" />
+                  <WhatsAppBadge className="w-8 h-8" />
                 </a>
               </div>
             </div>
           </div>
 
-          {/* Lending Products */}
+          {/* Quick Links */}
           <div>
             <h4 className="text-white text-xs font-bold uppercase tracking-wider mb-4 border-l-2 border-amber-500 pl-2">
               Lending Products
             </h4>
             <ul className="space-y-2.5 text-xs text-slate-400">
               <li>
-                <Link href="/products/payroll-loan" className="hover:text-amber-400 transition-colors">
-                  Corporate Personal Loans (EMI)
-                </Link>
-              </li>
-              <li>
-                <Link href="/products/earned-wage-access" className="hover:text-amber-400 transition-colors">
-                  Earned Wage Access (EWA)
-                </Link>
-              </li>
-              <li>
                 <Link href="/products" className="hover:text-amber-400 transition-colors">
-                  Product Comparison Matrix
+                  Loan Products Matrix & Calculators
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="hover:text-amber-400 transition-colors">
+                  About Dada Bridge (Dada Advisory)
                 </Link>
               </li>
               <li>
@@ -150,41 +149,42 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Portals & Architecture */}
+          {/* Corporate & Regulatory */}
           <div>
             <h4 className="text-white text-xs font-bold uppercase tracking-wider mb-4 border-l-2 border-amber-500 pl-2">
-              Enterprise Portals
+              Corporate & Regulatory
             </h4>
             <ul className="space-y-2.5 text-xs text-slate-400">
               <li>
-                <Link href="/login" className="hover:text-amber-400 transition-colors">
-                  Employee Self-Service Portal
-                </Link>
+                <span className="text-[11px] font-semibold text-slate-300 block">Brand & Platform:</span>
+                <span className="text-amber-300">Dada Bridge</span>
+                <span className="block text-[10px] text-slate-400">A unit of Dada Advisory Services LLP</span>
               </li>
               <li>
-                <Link href="/login" className="hover:text-amber-400 transition-colors">
-                  Corporate Employer & HR Portal
-                </Link>
+                <span className="text-[11px] font-semibold text-slate-300 block">Operating Entity:</span>
+                <span className="text-slate-200">Dada Advisory Services LLP</span>
+                <span className="block text-[10px] text-slate-500">LLPIN: {SITE_CONFIG.address.llpin}</span>
               </li>
               <li>
-                <Link href="/login" className="hover:text-amber-400 transition-colors">
-                  Partner NBFC Reconciliation Desk
-                </Link>
+                <span className="text-[11px] font-semibold text-slate-300 block">Institutional NBFCs:</span>
+                <span className="text-slate-200">Apex Capital Finance Ltd</span>
+                <span className="block text-slate-200">DMI Finance Private Ltd</span>
               </li>
-              <li>
-                <Link href="/faq" className="hover:text-amber-400 transition-colors">
+              <li className="pt-1">
+                <Link href="/faq" className="hover:text-amber-400 transition-colors block">
                   Fair Practices Code & KFS
                 </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-amber-400 transition-colors">
+                <Link href="/privacy" className="hover:text-amber-400 transition-colors block mt-1">
+                  Privacy Policy & Data Security
+                </Link>
+                <Link href="/contact" className="hover:text-amber-400 transition-colors block mt-1">
                   Grievance Redressal Desk
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Direct Support & Partnerships Contacts */}
+          {/* Helpline & Grievance */}
           <div>
             <h4 className="text-white text-xs font-bold uppercase tracking-wider mb-4 border-l-2 border-amber-500 pl-2">
               Contact & Helpline
@@ -212,7 +212,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 font-medium"
                 >
-                  <WhatsAppIcon className="w-3.5 h-3.5 shrink-0" />
+                  <WhatsAppBadge className="w-3.5 h-3.5 shrink-0" />
                   <span>{SITE_CONFIG.whatsapp.display} (Chat Online)</span>
                 </a>
               </li>
@@ -256,7 +256,7 @@ export default function Footer() {
             <span>Statutory Lending Service Provider (LSP) Disclosure</span>
           </div>
           <p>
-            <strong>Dada Advisory Services LLP</strong> acts exclusively as a Lending Service Provider (LSP) under the regulatory framework established by the Reserve Bank of India (RBI Circular: DOR.CRE.REC.66/21.04.048/2022-23). Dada Advisory Services LLP does not operate as a bank or NBFC, does not engage in balance-sheet lending, and never holds, pools, receives, or disburses borrower funds in its own accounts.
+            <strong>Dada Bridge</strong> is the digital lending application and platform operated exclusively by <strong>Dada Advisory Services LLP</strong> as a registered Lending Service Provider (LSP) under the regulatory framework established by the Reserve Bank of India (RBI Circular: DOR.CRE.REC.66/21.04.048/2022-23). Dada Bridge / Dada Advisory Services LLP does not operate as a bank or NBFC, does not engage in balance-sheet lending, and never holds, pools, receives, or disburses borrower funds in its own accounts.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 text-[11px] text-slate-300 border-t border-slate-800/80">
             <div>
@@ -269,9 +269,9 @@ export default function Footer() {
         </div>
 
         <div className="mt-8 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-          <div>© {new Date().getFullYear()} Dada Advisory Services LLP. All rights reserved.</div>
+          <div>© {new Date().getFullYear()} Dada Bridge (A Unit of Dada Advisory Services LLP). All rights reserved.</div>
           <div className="flex gap-6">
-            <Link href="/faq" className="hover:text-slate-400">Privacy Policy</Link>
+            <Link href="/privacy" className="hover:text-slate-400">Privacy Policy</Link>
             <Link href="/faq" className="hover:text-slate-400">Fair Practices Code</Link>
             <Link href="/faq" className="hover:text-slate-400">Key Fact Statement (KFS)</Link>
             <Link href="/contact" className="hover:text-slate-400">Terms of Service</Link>

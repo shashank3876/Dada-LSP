@@ -5,9 +5,9 @@ import Footer from '@/components/layout/Footer';
 import FloatingWhatsApp from '@/components/common/FloatingWhatsApp';
 
 export const metadata: Metadata = {
-  title: 'Dada Advisory Services LLP | Digital Loan Service Provider (LSP)',
+  title: 'Dada Bridge | Digital Loan Service Provider (LSP)',
   description:
-    'Dada Advisory Services LLP is an enterprise Digital Loan Service Provider (LSP) partnering with RBI-regulated NBFCs to provide corporate employees with ethical personal loans and Earned Wage Access.',
+    'Dada Bridge is an enterprise Digital Loan Service Provider (LSP) operated by Dada Advisory Services LLP, partnering with RBI-regulated NBFCs to provide corporate employees with ethical personal loans and Earned Wage Access.',
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },

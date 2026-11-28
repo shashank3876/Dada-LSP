@@ -20,7 +20,7 @@ export default function FloatingWhatsApp() {
         href={SITE_CONFIG.whatsapp.link}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Chat with Dada Advisory on WhatsApp"
+        aria-label="Chat with Dada Bridge on WhatsApp"
         className="w-13 h-13 p-3.5 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center relative focus:outline-none focus:ring-4 focus:ring-emerald-300"
       >
         <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full animate-ping opacity-75" />

@@ -1,12 +1,14 @@
 /**
  * Centralized Site Contact, Legal & Social Media Configuration
- * Dada Advisory Services LLP - Digital Loan Service Provider (LSP)
+ * Dada Bridge (A Unit of Dada Advisory Services LLP - Digital Loan Service Provider)
  */
 
 export const SITE_CONFIG = {
-  name: 'Dada Advisory Services LLP',
-  shortName: 'Dada Advisory',
-  tagline: 'Digital Loan Service Provider (LSP)',
+  name: 'Dada Bridge',
+  shortName: 'Dada Bridge',
+  parentCompany: 'Dada Advisory Services LLP',
+  brandLine: 'Dada Bridge • A Unit of Dada Advisory Services LLP',
+  tagline: 'Digital Loan Service Provider (LSP) • Powered by Dada Advisory Services LLP',
   supportEmail: 'support@dadaadvisoryservices.com',
   partnershipsEmail: 'connect@dadaadvisoryservices.com',
   
@@ -22,7 +24,7 @@ export const SITE_CONFIG = {
   whatsapp: {
     display: '+91 98200 12345',
     number: '919820012345',
-    link: 'https://wa.me/919820012345?text=Hello%20Dada%20Advisory%2C%20I%20have%20an%20inquiry%20regarding%20corporate%20loan%20services.',
+    link: 'https://wa.me/919820012345?text=Hello%20Dada%20Bridge%2C%20I%20have%20an%20inquiry%20regarding%20corporate%20loan%20services.',
     label: 'Chat on WhatsApp',
   },
   
@@ -30,22 +32,22 @@ export const SITE_CONFIG = {
   social: {
     linkedin: {
       name: 'LinkedIn',
-      handle: '@dadaadvisoryservices',
+      handle: '@dadabridge',
       url: 'https://www.linkedin.com/company/dadaadvisoryservices',
     },
     youtube: {
       name: 'YouTube',
-      handle: '@DadaAdvisoryServices',
+      handle: '@DadaBridge',
       url: 'https://www.youtube.com/@dadaadvisoryservices',
     },
     instagram: {
       name: 'Instagram',
-      handle: '@dadaadvisoryservices',
+      handle: '@dadabridge',
       url: 'https://www.instagram.com/dadaadvisoryservices',
     },
     facebook: {
       name: 'Facebook',
-      handle: 'Dada Advisory Services LLP',
+      handle: 'Dada Bridge (Dada Advisory)',
       url: 'https://www.facebook.com/dadaadvisoryservices',
     },
   },
@@ -53,6 +55,7 @@ export const SITE_CONFIG = {
   // Corporate Registered Address
   address: {
     company: 'Dada Advisory Services LLP',
+    brandName: 'Dada Bridge',
     line1: 'Level 8, Tower B, Godrej IT Park, Godrej Business District',
     line2: 'Vikhroli West, Mumbai, Maharashtra - 400079',
     llpin: 'ABR-8921',

@@ -13,10 +13,10 @@ export default function HowItWorksPage() {
           <span>Tripartite Architecture • Zero Balance Sheet Holding</span>
         </div>
         <h1 className="text-4xl font-extrabold text-dada-950 tracking-tight">
-          How Dada Advisory Operates
+          How Dada Bridge Operates
         </h1>
         <p className="text-base text-slate-600 leading-relaxed">
-          A compliant, tripartite digital ecosystem connecting Corporate Employers, Employees, and Regulated Financial Institutions (Banks & NBFCs) under RBI Digital Lending Guidelines.
+          Dada Bridge is a compliant, tripartite digital ecosystem connecting Corporate Employers, Employees, and Regulated Financial Institutions (Banks & NBFCs) under RBI Digital Lending Guidelines.
         </p>
       </div>
 
